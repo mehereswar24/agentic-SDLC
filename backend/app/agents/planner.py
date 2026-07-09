@@ -20,7 +20,8 @@ from app.agents.prompts.planner import (
     DRAFT_SYSTEM_PROMPT,
     REVISION_SYSTEM_PROMPT,
 )
-from app.llm.types import TokenUsage
+from app.llm.client import get_planner_llm_client
+from app.llm.types import LLMClient, TokenUsage
 from app.models import ArtifactKind
 from app.schemas import PRD, Critique
 
@@ -78,6 +79,9 @@ class PlannerAgent(BaseAgent):
     DRAFT_TEMPERATURE = 0.4
     REVISION_TEMPERATURE = 0.2
     CRITIQUE_TEMPERATURE = 0.1
+
+    def __init__(self, llm: LLMClient | None = None) -> None:
+        super().__init__(llm=llm if llm is not None else get_planner_llm_client())
 
     async def draft(self, prompt: str, *, context: str | None = None) -> PlannerOutput:
         """Produce an initial PRD for `prompt`."""

@@ -38,8 +38,12 @@ class CodeBundle(BaseModel):
     )
     files: list[CodeFile] = Field(
         description=(
-            "Source files. Aim for 3–6 files that form a runnable v1 — not an "
-            "exhaustive codebase. Each file should be 30–150 lines."
+            "Source files that form a runnable v1 — not an exhaustive codebase. "
+            "Backend/logic files should stay focused (~30–150 lines each). "
+            "If the product is user-facing, you MUST include a polished frontend "
+            "(e.g. an index.html served at the root route) following the design "
+            "standard in the system prompt; that UI file may be substantially "
+            "longer, and that is expected — do not truncate it."
         ),
     )
     setup_instructions: str = Field(

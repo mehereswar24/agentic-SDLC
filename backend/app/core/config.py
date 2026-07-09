@@ -37,6 +37,18 @@ class Settings(BaseSettings):
     gemini_model: str = Field(default="gemini-2.5-flash")
     tavily_api_key: SecretStr = Field(default=SecretStr(""))
 
+    # --- Per-stage LLM provider (hybrid setup) ---
+    # Each SDLC stage can independently run on Gemini (cloud, higher quality) or
+    # a local Ollama model (free, unlimited, offline). E.g. put the chatty
+    # planner/designer on local to save Gemini quota for the coder.
+    planner_llm_provider: Literal["gemini", "ollama"] = Field(default="gemini")
+    designer_llm_provider: Literal["gemini", "ollama"] = Field(default="gemini")
+    coder_llm_provider: Literal["gemini", "ollama"] = Field(default="gemini")
+    ollama_base_url: str = Field(default="http://localhost:11434")
+    ollama_model: str = Field(default="qwen2.5-coder:7b")
+    ollama_num_ctx: int = Field(default=8192)
+    ollama_timeout_sec: float = Field(default=600.0)
+
     # Optional API key gating /api/* and /ws/*. When empty, the API is open
     # (suitable for local dev). When set, callers must present this exact
     # string as `Authorization: Bearer <key>` (REST) or `?token=<key>` (WS).

@@ -17,7 +17,7 @@ from structlog.stdlib import BoundLogger
 
 from app.core.logging import get_logger
 from app.llm.client import get_llm_client
-from app.llm.gemini import GeminiClient
+from app.llm.types import LLMClient
 from app.models import ArtifactKind
 
 
@@ -30,16 +30,16 @@ class BaseAgent:
     #: secondary artifacts like notes or critiques).
     produces: ClassVar[ArtifactKind | None] = None
 
-    def __init__(self, llm: GeminiClient | None = None) -> None:
+    def __init__(self, llm: LLMClient | None = None) -> None:
         if not self.name:
             raise TypeError(
                 f"{self.__class__.__name__} must set a non-empty `name` class var."
             )
-        self._llm: GeminiClient = llm if llm is not None else get_llm_client()
+        self._llm: LLMClient = llm if llm is not None else get_llm_client()
         self.logger: BoundLogger = get_logger(f"agent.{self.name}")
 
     @property
-    def llm(self) -> GeminiClient:
+    def llm(self) -> LLMClient:
         return self._llm
 
 

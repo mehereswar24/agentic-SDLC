@@ -16,7 +16,8 @@ from dataclasses import dataclass
 
 from app.agents.base import AgentRegistry, BaseAgent
 from app.agents.prompts.designer import DESIGN_SYSTEM_PROMPT
-from app.llm.types import TokenUsage
+from app.llm.client import get_designer_llm_client
+from app.llm.types import LLMClient, TokenUsage
 from app.models import ArtifactKind
 from app.schemas import PRD, SystemDesign
 
@@ -36,6 +37,9 @@ class DesignerAgent(BaseAgent):
     produces = ArtifactKind.SYSTEM_DESIGN
 
     DESIGN_TEMPERATURE = 0.3
+
+    def __init__(self, llm: LLMClient | None = None) -> None:
+        super().__init__(llm=llm if llm is not None else get_designer_llm_client())
 
     async def design(self, prd: PRD) -> DesignerOutput:
         user_prompt = (

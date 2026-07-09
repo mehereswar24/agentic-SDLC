@@ -10,7 +10,8 @@ from dataclasses import dataclass
 
 from app.agents.base import AgentRegistry, BaseAgent
 from app.agents.prompts.coder import CODE_SYSTEM_PROMPT
-from app.llm.types import TokenUsage
+from app.llm.client import get_coder_llm_client
+from app.llm.types import LLMClient, TokenUsage
 from app.models import ArtifactKind
 from app.schemas import PRD, SystemDesign
 from app.schemas.code import CodeBundle
@@ -31,6 +32,14 @@ class CoderAgent(BaseAgent):
     produces = ArtifactKind.CODE
 
     BUILD_TEMPERATURE = 0.2
+    # A polished single-page UI is large; give the model plenty of output budget
+    # so the index.html isn't truncated mid-string (which fails JSON parsing).
+    BUILD_MAX_OUTPUT_TOKENS = 32768
+
+    def __init__(self, llm: LLMClient | None = None) -> None:
+        # Default to the coder-stage client (local Ollama in the hybrid setup);
+        # an explicit client (e.g. a test stub) still wins.
+        super().__init__(llm=llm if llm is not None else get_coder_llm_client())
 
     async def build(self, prd: PRD, design: SystemDesign) -> CoderOutput:
         user_prompt = (
@@ -50,6 +59,7 @@ class CoderAgent(BaseAgent):
             system=CODE_SYSTEM_PROMPT,
             schema=CodeBundle,
             temperature=self.BUILD_TEMPERATURE,
+            max_output_tokens=self.BUILD_MAX_OUTPUT_TOKENS,
         )
         assert result.parsed is not None
         self.logger.info(

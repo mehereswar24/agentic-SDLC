@@ -1,0 +1,502 @@
+INFO:     Started server process [38964]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56527 - "WebSocket /ws/runs/672ed88bc3634cebab46a7462255cb63" [accepted]
+INFO:     connection open
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 940, in transfer_data
+    message = await self.read_message()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 1010, in read_message
+    frame = await self.read_data_frame(max_size=self.max_size)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 1087, in read_data_frame
+    frame = await self.read_frame(max_size)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 1144, in read_frame
+    frame = await Frame.read(
+            ^^^^^^^^^^^^^^^^^
+    ...<4 lines>...
+    )
+    ^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\framing.py", line 70, in read
+    data = await reader(2)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\miniconda3\Lib\asyncio\streams.py", line 767, in readexactly
+    raise exceptions.IncompleteReadError(incomplete, n)
+asyncio.exceptions.IncompleteReadError: 0 bytes read on a total of 2 expected bytes
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 317, in asgi_send
+    await self.send(data)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 618, in send
+    await self.ensure_open()
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 916, in ensure_open
+    raise self.connection_closed_exc()
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 86, in send
+    await self._send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 39, in sender
+    await send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 330, in asgi_send
+    raise ClientDisconnected from exc
+uvicorn.protocols.utils.ClientDisconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 125, in stream_run
+    await _send_json(ws, _snapshot_payload(run))
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 75, in _send_json
+    await ws.send_json(payload)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 176, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 89, in send
+    raise WebSocketDisconnect(code=1006)
+starlette.websockets.WebSocketDisconnect
+INFO:     127.0.0.1:49667 - "WebSocket /ws/runs/672ed88bc3634cebab46a7462255cb63" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:62969 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 173, in stream_run
+    await ws.close(code=1000, reason="run finished")
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 181, in close
+    await self.send({"type": "websocket.close", "code": code, "reason": reason or ""})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 98, in send
+    raise RuntimeError('Cannot call "send" once a close message has been sent.')
+RuntimeError: Cannot call "send" once a close message has been sent.
+INFO:     127.0.0.1:56128 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:49796 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection closed
+INFO:     127.0.0.1:62044 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 317, in asgi_send
+    await self.send(data)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 618, in send
+    await self.ensure_open()
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 916, in ensure_open
+    raise self.connection_closed_exc()
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 86, in send
+    await self._send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 39, in sender
+    await send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 330, in asgi_send
+    raise ClientDisconnected from exc
+uvicorn.protocols.utils.ClientDisconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 125, in stream_run
+    await _send_json(ws, _snapshot_payload(run))
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 75, in _send_json
+    await ws.send_json(payload)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 176, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 89, in send
+    raise WebSocketDisconnect(code=1006)
+starlette.websockets.WebSocketDisconnect
+INFO:     connection closed
+INFO:     127.0.0.1:64461 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     127.0.0.1:57972 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection closed
+INFO:     connection open
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 317, in asgi_send
+    await self.send(data)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 618, in send
+    await self.ensure_open()
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 916, in ensure_open
+    raise self.connection_closed_exc()
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 86, in send
+    await self._send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 39, in sender
+    await send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 330, in asgi_send
+    raise ClientDisconnected from exc
+uvicorn.protocols.utils.ClientDisconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 125, in stream_run
+    await _send_json(ws, _snapshot_payload(run))
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 75, in _send_json
+    await ws.send_json(payload)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 176, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 89, in send
+    raise WebSocketDisconnect(code=1006)
+starlette.websockets.WebSocketDisconnect
+INFO:     connection closed
+INFO:     127.0.0.1:50522 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     127.0.0.1:59926 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection closed
+INFO:     connection open
+INFO:     connection closed
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 317, in asgi_send
+    await self.send(data)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 618, in send
+    await self.ensure_open()
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 916, in ensure_open
+    raise self.connection_closed_exc()
+websockets.exceptions.ConnectionClosedOK: received 1001 (going away); then sent 1001 (going away)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 86, in send
+    await self._send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 39, in sender
+    await send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 330, in asgi_send
+    raise ClientDisconnected from exc
+uvicorn.protocols.utils.ClientDisconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 125, in stream_run
+    await _send_json(ws, _snapshot_payload(run))
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 75, in _send_json
+    await ws.send_json(payload)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 176, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 89, in send
+    raise WebSocketDisconnect(code=1006)
+starlette.websockets.WebSocketDisconnect
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 317, in asgi_send
+    await self.send(data)  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 618, in send
+    await self.ensure_open()
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\websockets\legacy\protocol.py", line 916, in ensure_open
+    raise self.connection_closed_exc()
+websockets.exceptions.ConnectionClosedError: no close frame received or sent
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 86, in send
+    await self._send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 39, in sender
+    await send(message)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 330, in asgi_send
+    raise ClientDisconnected from exc
+uvicorn.protocols.utils.ClientDisconnected
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py", line 239, in run_asgi
+    result = await self.app(self.scope, self.asgi_receive, self.asgi_send)  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 56, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\errors.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\base.py", line 103, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\cors.py", line 80, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\routing.py", line 350, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 160, in app
+    await wrap_app_handling_exceptions(app, session)(scope, receive, send)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 157, in app
+    await func(session)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\fastapi\routing.py", line 764, in app
+    await dependant.call(**solved_result.values)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 125, in stream_run
+    await _send_json(ws, _snapshot_payload(run))
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\backend\app\api\ws.py", line 75, in _send_json
+    await ws.send_json(payload)
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 176, in send_json
+    await self.send({"type": "websocket.send", "text": text})
+  File "C:\Users\Mehereswar\Desktop\agentic-sdlc\.venv\Lib\site-packages\starlette\websockets.py", line 89, in send
+    raise WebSocketDisconnect(code=1006)
+starlette.websockets.WebSocketDisconnect
+INFO:     127.0.0.1:53711 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:62301 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:60945 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:59256 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:54294 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:54967 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:53862 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:59558 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     127.0.0.1:50822 - "WebSocket /ws/runs/b6346bf589054d7bb6aba85a175f980a" [accepted]
+INFO:     connection open
+INFO:     connection closed

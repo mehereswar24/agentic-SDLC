@@ -15,6 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import __version__
+from app.api.chat import router as chat_router
+from app.api.code import router as code_router
 from app.api.health import router as health_router
 from app.api.llm import router as llm_router
 from app.api.planner import router as planner_router
@@ -103,6 +105,8 @@ def create_app() -> FastAPI:
     app.include_router(llm_router)
     app.include_router(planner_router)
     app.include_router(runs_router)
+    app.include_router(chat_router)
+    app.include_router(code_router)
     app.include_router(stats_router)
     app.include_router(ws_router)
 

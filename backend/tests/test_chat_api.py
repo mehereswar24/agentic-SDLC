@@ -106,8 +106,8 @@ async def test_chat_replays_history(
 async def test_chat_requires_llm_configured(
     client: AsyncClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
-    get_settings.cache_clear()
+    from app.core.config import Settings
+    monkeypatch.setattr(Settings, "llm_configured", False)
     run = await RunRepository().create_run("Build a wiki", meta={})
 
     res = await client.post(

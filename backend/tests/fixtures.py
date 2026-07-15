@@ -123,9 +123,50 @@ def make_critique(
 from app.agents.coder import CoderOutput  # noqa: E402
 from app.agents.designer import DesignerOutput  # noqa: E402
 from app.agents.planner import PlannerOutput  # noqa: E402
+from app.agents.sprint_planner import SprintPlannerOutput  # noqa: E402
+from app.agents.tester import TesterOutput  # noqa: E402
 from app.llm.types import TokenUsage  # noqa: E402
 from app.schemas import Component, DataModel, SystemDesign  # noqa: E402
 from app.schemas.code import CodeBundle, CodeFile  # noqa: E402
+from app.schemas.sprint_plan import Sprint, SprintPlan, SprintTask  # noqa: E402
+from app.schemas.test_suite import TestFile, TestSuite  # noqa: E402
+
+
+def make_sprint_plan() -> SprintPlan:
+    return SprintPlan(
+        sprints=[
+            Sprint(
+                id="sprint-1",
+                name="Sprint 1",
+                goal="Set up the foundation and initial models",
+                duration_days=14,
+                stories=["US-01"],
+                tasks=[
+                    SprintTask(
+                        id="task-1",
+                        title="Database setup",
+                        description="Initialize SQLite DB",
+                        story_points=3,
+                        type="db",
+                    )
+                ],
+            )
+        ]
+    )
+
+
+def make_test_suite() -> TestSuite:
+    return TestSuite(
+        framework="pytest",
+        test_files=[
+            TestFile(
+                path="tests/test_main.py",
+                content="def test_ok(): assert True",
+                test_type="unit",
+                covers=["main.py"],
+            )
+        ],
+    )
 
 
 def make_design(*, title: str = "Habit Tracker — Architecture") -> SystemDesign:
@@ -222,6 +263,32 @@ class StubCoder:
     async def build(self, prd: PRD, design: SystemDesign) -> CoderOutput:
         return CoderOutput(
             code=make_code(),
+            usage=TokenUsage(prompt=30, completion=200, total=230),
+            latency_ms=80,
+            model="stub",
+            finish_reason="STOP",
+        )
+
+
+class StubSprintPlanner:
+    name = "sprint_planner"
+
+    async def plan(self, prd: PRD, design: SystemDesign) -> SprintPlannerOutput:
+        return SprintPlannerOutput(
+            plan=make_sprint_plan(),
+            usage=TokenUsage(prompt=30, completion=200, total=230),
+            latency_ms=80,
+            model="stub",
+            finish_reason="STOP",
+        )
+
+
+class StubTester:
+    name = "tester"
+
+    async def generate_tests(self, code: CodeBundle) -> TesterOutput:
+        return TesterOutput(
+            test_suite=make_test_suite(),
             usage=TokenUsage(prompt=30, completion=200, total=230),
             latency_ms=80,
             model="stub",

@@ -22,6 +22,27 @@ from app.schemas.api import (
     RunListResponse,
     RunSummary,
 )
+from app.models import ArtifactKind
+from typing import Any
+from pydantic import BaseModel
+from app.llm.client import get_planner_llm_client
+
+from app.schemas.prd import PRD
+from app.schemas.design import SystemDesign
+from app.schemas.sprint_plan import SprintPlan
+from app.schemas.code import CodeBundle
+from app.schemas.test_suite import TestSuite
+
+SCHEMA_MAP = {
+    "prd": PRD,
+    "system_design": SystemDesign,
+    "sprint_plan": SprintPlan,
+    "code": CodeBundle,
+    "test_suite": TestSuite
+}
+
+class ParseRequest(BaseModel):
+    text: str
 
 router = APIRouter(
     prefix="/api/runs",
@@ -92,6 +113,78 @@ async def decide_run(
             )
         )
 
+    updated = await repo.get_run(run_id)
+    return RunSummary.model_validate(updated or run)
+
+
+@router.post("/{run_id}/retry", response_model=RunSummary)
+async def retry_run(
+    run_id: str,
+    repo: RunRepository = Depends(_repo),
+    settings: Settings = Depends(get_settings),
+) -> RunSummary:
+    """Retry a failed run from its last completed stage."""
+    run = await repo.get_run(run_id)
+    if run is None:
+        raise NotFoundError(f"Run '{run_id}' not found")
+    if run.status != RunStatus.FAILED:
+        raise ConflictError("Only failed runs can be retried.")
+        
+    if not settings.llm_configured:
+        raise LLMUnavailableError("GOOGLE_API_KEY is not configured.")
+        
+    await repo.set_status(run_id, RunStatus.RUNNING, error=None)
+    get_runtime().spawn(run_id)
+    
+    updated = await repo.get_run(run_id)
+    return RunSummary.model_validate(updated or run)
+
+
+@router.put("/{run_id}/artifacts/{kind}", response_model=RunSummary)
+async def update_artifact(
+    run_id: str,
+    kind: ArtifactKind,
+    content: dict[str, Any],
+    repo: RunRepository = Depends(_repo),
+) -> RunSummary:
+    """Manually update an artifact (e.g. user editing PRD before approval).
+    Creates a new version of the artifact.
+    """
+    run = await repo.get_run(run_id)
+    if run is None:
+        raise NotFoundError(f"Run '{run_id}' not found")
+        
+    await repo.save_artifact(run_id, kind=kind, content=content)
+    
+    updated = await repo.get_run(run_id)
+    return RunSummary.model_validate(updated or run)
+
+
+@router.post("/{run_id}/artifacts/{kind}/parse", response_model=RunSummary)
+async def parse_artifact(
+    run_id: str,
+    kind: ArtifactKind,
+    req: ParseRequest,
+    repo: RunRepository = Depends(_repo),
+) -> RunSummary:
+    """Uses the LLM to parse unstructured text back into the structured artifact schema."""
+    run = await repo.get_run(run_id)
+    if run is None:
+        raise NotFoundError(f"Run '{run_id}' not found")
+        
+    schema = SCHEMA_MAP.get(kind.value)
+    if not schema:
+        raise ValueError(f"Unknown artifact kind: {kind.value}")
+        
+    client = get_planner_llm_client()
+    prompt = f"Parse the following unstructured text into the exact JSON schema required for a {kind.value}. Make sure to extract all relevant details from the text:\n\n{req.text}"
+    
+    result = await client.chat(prompt, schema=schema, temperature=0.1)
+    if not result.parsed:
+        raise ValueError("LLM failed to produce the requested schema.")
+        
+    await repo.save_artifact(run_id, kind=kind, content=result.parsed.model_dump(mode='json'))
+    
     updated = await repo.get_run(run_id)
     return RunSummary.model_validate(updated or run)
 

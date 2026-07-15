@@ -45,9 +45,9 @@ class CoderAgent(BaseAgent):
         user_prompt = (
             "Implement a minimal, runnable v1 of this project.\n\n"
             "PRD (JSON):\n"
-            f"{prd.model_dump_json(indent=2)}\n\n"
+            f"{prd.model_dump_json(exclude_none=True)}\n\n"
             "System design (JSON):\n"
-            f"{design.model_dump_json(indent=2)}"
+            f"{design.model_dump_json(exclude_none=True)}"
         )
         self.logger.info(
             "coder_start",

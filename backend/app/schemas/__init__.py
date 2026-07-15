@@ -14,6 +14,8 @@ from app.schemas.prd import (
     SuccessMetric,
     UserStory,
 )
+from app.schemas.sprint_plan import Sprint, SprintPlan, SprintTask
+from app.schemas.test_suite import TestFile, TestSuite
 
 __all__ = [
     "PRD",
@@ -30,4 +32,9 @@ __all__ = [
     "SuccessMetric",
     "SystemDesign",
     "UserStory",
+    "Sprint",
+    "SprintPlan",
+    "SprintTask",
+    "TestFile",
+    "TestSuite",
 ]

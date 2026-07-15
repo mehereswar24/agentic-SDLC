@@ -15,7 +15,7 @@ from app.models import RunStatus
 from app.orchestrator.events import Event, EventBus, EventType
 from app.orchestrator.repository import RunRepository
 from app.orchestrator.runner import Orchestrator
-from tests.fixtures import FastPlanner, StubCoder, StubDesigner
+from tests.fixtures import FastPlanner, StubCoder, StubDesigner, StubSprintPlanner, StubTester
 
 
 @pytest.fixture
@@ -29,7 +29,9 @@ def _full_orch(repo: RunRepository, bus: EventBus) -> Orchestrator:
         bus=bus,
         agent_factory=lambda: FastPlanner(),
         designer=StubDesigner(),
+        sprint_planner=StubSprintPlanner(),
         coder=StubCoder(),
+        tester=StubTester(),
     )
 
 
@@ -42,12 +44,14 @@ async def test_auto_approve_runs_full_pipeline(setup: dict[str, Any]) -> None:
     final = await repo.get_run(run.id)
     assert final is not None
     assert final.status == RunStatus.COMPLETED
-    assert [s.node for s in final.steps] == ["draft", "critique", "design", "build"]
+    assert [s.node for s in final.steps] == ["draft", "critique", "design", "sprint_plan", "build", "test"]
     assert sorted(a.kind.value for a in final.artifacts) == [
         "code",
         "critique",
         "prd",
+        "sprint_plan",
         "system_design",
+        "test_suite",
     ]
     code_art = next(a for a in final.artifacts if a.kind.value == "code")
     assert code_art.content["project_name"] == "habit-tracker"
@@ -68,25 +72,36 @@ async def test_approval_gates_pause_then_resume(setup: dict[str, Any]) -> None:
     assert r1.meta["stage_index"] == 1
     assert sorted(a.kind.value for a in r1.artifacts) == ["critique", "prd"]
 
-    # 2. Approve (re-run) → design stage runs, pauses before build.
+    # 2. Approve (re-run) → design stage runs, pauses before sprint_plan.
     await orch.run(run.id)
     r2 = await repo.get_run(run.id)
     assert r2 is not None
     assert r2.status == RunStatus.AWAITING_HUMAN
-    assert r2.meta["awaiting_stage"] == "build"
+    assert r2.meta["awaiting_stage"] == "sprint_plan"
     assert r2.meta["stage_index"] == 2
     kinds2 = [a.kind.value for a in r2.artifacts]
     assert "system_design" in kinds2
     assert "code" not in kinds2
 
-    # 3. Approve (re-run) → build stage runs, run completes.
+    # 3. Approve (re-run) → sprint_plan stage runs, pauses before build.
     await orch.run(run.id)
     r3 = await repo.get_run(run.id)
     assert r3 is not None
-    assert r3.status == RunStatus.COMPLETED
-    assert r3.meta["awaiting_stage"] is None
-    assert "code" in [a.kind.value for a in r3.artifacts]
-    assert [s.node for s in r3.steps] == ["draft", "critique", "design", "build"]
+    assert r3.status == RunStatus.AWAITING_HUMAN
+    assert r3.meta["awaiting_stage"] == "build"
+    assert r3.meta["stage_index"] == 3
+    kinds3 = [a.kind.value for a in r3.artifacts]
+    assert "sprint_plan" in kinds3
+
+    # 4. Approve (re-run) → build stage runs, test stage runs, completes.
+    await orch.run(run.id)
+    r4 = await repo.get_run(run.id)
+    assert r4 is not None
+    assert r4.status == RunStatus.COMPLETED
+    assert r4.meta["awaiting_stage"] is None
+    assert "code" in [a.kind.value for a in r4.artifacts]
+    assert "test_suite" in [a.kind.value for a in r4.artifacts]
+    assert [s.node for s in r4.steps] == ["draft", "critique", "design", "sprint_plan", "build", "test"]
 
 
 async def test_awaiting_approval_event_is_published(setup: dict[str, Any]) -> None:

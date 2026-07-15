@@ -17,7 +17,7 @@ from app.orchestrator.events import _reset_event_bus, get_event_bus
 from app.orchestrator.repository import RunRepository
 from app.orchestrator.runner import Orchestrator
 from app.orchestrator.runtime import OrchestratorRuntime
-from tests.fixtures import FastPlanner, StubCoder, StubDesigner
+from tests.fixtures import FastPlanner, StubCoder, StubDesigner, StubSprintPlanner, StubTester
 
 
 @pytest_asyncio.fixture
@@ -36,7 +36,9 @@ async def configured_runtime(
             bus=bus,
             agent_factory=lambda: FastPlanner(),
             designer=StubDesigner(),
+            sprint_planner=StubSprintPlanner(),
             coder=StubCoder(),
+            tester=StubTester(),
         )
 
     runtime = OrchestratorRuntime(orchestrator_factory=factory)
@@ -86,6 +88,13 @@ async def test_approve_advances_pipeline_to_completion(
 
     body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
     assert body["status"] == "awaiting_human"
+    assert body["meta"]["awaiting_stage"] == "sprint_plan"
+
+    res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
+    assert res.status_code == 200, res.text
+
+    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+    assert body["status"] == "awaiting_human"
     assert body["meta"]["awaiting_stage"] == "build"
 
     res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
@@ -97,7 +106,9 @@ async def test_approve_advances_pipeline_to_completion(
         "code",
         "critique",
         "prd",
+        "sprint_plan",
         "system_design",
+        "test_suite",
     ]
 
 

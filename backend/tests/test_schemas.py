@@ -62,3 +62,23 @@ def test_critique_fixture_is_valid() -> None:
 def test_critique_rejects_wrong_score_type() -> None:
     with pytest.raises(ValidationError):
         Critique(score="not a number", summary="x", should_revise=False)  # type: ignore[arg-type]
+
+
+def test_sprint_plan_fixture_is_valid() -> None:
+    from app.schemas import SprintPlan
+    from tests.fixtures import make_sprint_plan
+    
+    plan = make_sprint_plan()
+    assert len(plan.sprints) >= 1
+    revived = SprintPlan.model_validate_json(plan.model_dump_json())
+    assert revived == plan
+
+
+def test_test_suite_fixture_is_valid() -> None:
+    from app.schemas import TestSuite
+    from tests.fixtures import make_test_suite
+    
+    suite = make_test_suite()
+    assert len(suite.test_files) >= 1
+    revived = TestSuite.model_validate_json(suite.model_dump_json())
+    assert revived == suite

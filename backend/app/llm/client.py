@@ -14,6 +14,8 @@ from app.core.errors import LLMUnavailableError
 from app.llm.errors import LLMConfigError
 from app.llm.gemini import GeminiClient
 from app.llm.ollama import OllamaClient
+from app.llm.groq import GroqClient
+from app.llm.openrouter import OpenRouterClient
 from app.llm.types import LLMClient
 
 _client: GeminiClient | None = None
@@ -35,6 +37,10 @@ def get_llm_client() -> GeminiClient:
 def _client_for_provider(provider: str) -> LLMClient:
     if provider == "ollama":
         return OllamaClient()
+    if provider == "groq":
+        return GroqClient()
+    if provider == "openrouter":
+        return OpenRouterClient()
     return get_llm_client()
 
 
@@ -58,6 +64,14 @@ def get_designer_llm_client() -> LLMClient:
 
 def get_coder_llm_client() -> LLMClient:
     return get_stage_llm_client("coder")
+
+
+def get_sprint_planner_llm_client() -> LLMClient:
+    return get_stage_llm_client("sprint_planner")
+
+
+def get_tester_llm_client() -> LLMClient:
+    return get_stage_llm_client("tester")
 
 
 def _reset_llm_client() -> None:

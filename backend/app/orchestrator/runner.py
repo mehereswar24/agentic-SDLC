@@ -39,12 +39,15 @@ from typing import Any
 from app.agents.coder import CoderAgent
 from app.agents.designer import DesignerAgent
 from app.agents.planner import PlannerAgent, PlannerOutput
+from app.agents.sprint_planner import SprintPlannerAgent
+from app.agents.tester import TesterAgent
 from app.core.logging import get_logger
 from app.llm.errors import LLMError
 from app.models import ArtifactKind, RunStatus
 from app.orchestrator.events import Event, EventBus, EventType, get_event_bus
 from app.orchestrator.repository import RunRepository
-from app.schemas import PRD, Critique, SystemDesign
+from app.schemas import PRD, Critique, SystemDesign, SprintPlan
+from app.schemas.code import CodeBundle
 
 logger = get_logger(__name__)
 
@@ -71,7 +74,13 @@ class StageSpec:
 
 
 # Maps a stage name to the agent name persisted on AgentStep.agent / event payloads.
-_STAGE_AGENT = {"plan": "planner", "design": "designer", "build": "coder"}
+_STAGE_AGENT = {
+    "plan": "planner",
+    "design": "designer",
+    "sprint_plan": "sprint_planner",
+    "build": "coder",
+    "test": "tester",
+}
 
 
 class _StageAborted(Exception):
@@ -92,18 +101,22 @@ class Orchestrator:
         designer: Any | None = None,
         coder: Any | None = None,
         config: WorkflowConfig | None = None,
+        **kwargs: Any,
     ) -> None:
         self._repo = repo or RunRepository()
         self._bus = bus or get_event_bus()
         self._planner_factory: Callable[[], Any] = agent_factory or PlannerAgent
         self._designer = designer
+        self._sprint_planner = kwargs.get("sprint_planner")
         self._coder = coder
+        self._tester = kwargs.get("tester")
         self._config = config or WorkflowConfig()
 
         # Planner-only (legacy) mode when only a planner factory is supplied:
         # one stage, no approval gate, runs straight to completion.
         plan_only = (
             agent_factory is not None and designer is None and coder is None
+            and not self._sprint_planner and not self._tester
         )
         if plan_only:
             self._stages: list[StageSpec] = [StageSpec("plan", requires_approval=False)]
@@ -111,7 +124,9 @@ class Orchestrator:
             self._stages = [
                 StageSpec("plan", requires_approval=True),
                 StageSpec("design", requires_approval=True),
+                StageSpec("sprint_plan", requires_approval=True),
                 StageSpec("build", requires_approval=False),
+                StageSpec("test", requires_approval=False),
             ]
 
     # -------------------------------------------------------------- entrypoint
@@ -198,8 +213,12 @@ class Orchestrator:
             await self._stage_plan(run_id, prompt)
         elif name == "design":
             await self._stage_design(run_id)
+        elif name == "sprint_plan":
+            await self._stage_sprint_plan(run_id)
         elif name == "build":
             await self._stage_build(run_id)
+        elif name == "test":
+            await self._stage_test(run_id)
         else:  # pragma: no cover — guarded by StageSpec construction
             raise ValueError(f"Unknown stage '{name}'")
 
@@ -369,6 +388,65 @@ class Orchestrator:
             EventType.STEP_COMPLETED, run_id, self._step_payload("build", out)
         )
 
+    # ------------------------------------------------------- sprint plan stage
+
+    async def _stage_sprint_plan(self, run_id: str) -> None:
+        prd = await self._load_prd(run_id, stage="sprint_plan")
+        design = await self._load_design(run_id)
+        sprint_planner = self._sprint_planner if self._sprint_planner is not None else SprintPlannerAgent()
+
+        await self._publish(EventType.STEP_STARTED, run_id, {"node": "sprint_plan"})
+        try:
+            out = await sprint_planner.plan(prd, design)
+        except LLMError as exc:
+            await self._fail_step(run_id, "sprint_plan", "sprint_planner", exc)
+            raise _StageAborted from exc
+
+        await self._persist_stage_step(
+            run_id,
+            "sprint_plan",
+            "sprint_planner",
+            output={
+                "sprints": len(out.plan.sprints),
+            },
+            out=out,
+        )
+        await self._persist_artifact(
+            run_id, ArtifactKind.SPRINT_PLAN, out.plan.model_dump(mode="json")
+        )
+        await self._publish(
+            EventType.STEP_COMPLETED, run_id, self._step_payload("sprint_plan", out)
+        )
+
+    # ------------------------------------------------------------- test stage
+
+    async def _stage_test(self, run_id: str) -> None:
+        code = await self._load_code(run_id)
+        tester = self._tester if self._tester is not None else TesterAgent()
+
+        await self._publish(EventType.STEP_STARTED, run_id, {"node": "test"})
+        try:
+            out = await tester.generate_tests(code)
+        except LLMError as exc:
+            await self._fail_step(run_id, "test", "tester", exc)
+            raise _StageAborted from exc
+
+        await self._persist_stage_step(
+            run_id,
+            "test",
+            "tester",
+            output={
+                "test_files": len(out.test_suite.test_files),
+            },
+            out=out,
+        )
+        await self._persist_artifact(
+            run_id, ArtifactKind.TEST_SUITE, out.test_suite.model_dump(mode="json")
+        )
+        await self._publish(
+            EventType.STEP_COMPLETED, run_id, self._step_payload("test", out)
+        )
+
     # ------------------------------------------------------------- prerequisites
 
     async def _load_prd(self, run_id: str, *, stage: str) -> PRD:
@@ -384,6 +462,20 @@ class Orchestrator:
             await self._fail_missing_input(run_id, "build", "system design")
             raise _StageAborted
         return SystemDesign.model_validate(art.content)
+
+    async def _load_sprint_plan(self, run_id: str) -> SprintPlan:
+        art = await self._repo.latest_artifact(run_id, ArtifactKind.SPRINT_PLAN)
+        if art is None:
+            await self._fail_missing_input(run_id, "build", "sprint plan")
+            raise _StageAborted
+        return SprintPlan.model_validate(art.content)
+
+    async def _load_code(self, run_id: str) -> CodeBundle:
+        art = await self._repo.latest_artifact(run_id, ArtifactKind.CODE)
+        if art is None:
+            await self._fail_missing_input(run_id, "test", "code bundle")
+            raise _StageAborted
+        return CodeBundle.model_validate(art.content)
 
     # ------------------------------------------------------------- helpers
 

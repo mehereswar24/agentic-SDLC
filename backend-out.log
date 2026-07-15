@@ -1,0 +1,228 @@
+2026-06-07T11:02:45.341602Z [info     ] app_starting                   database_url=sqlite+aiosqlite:///C:/Users/Mehereswar/Desktop/agentic-sdlc/agentic_sdlc.db env=dev llm_configured=True version=0.1.0
+2026-06-07T11:02:45.782554Z [info     ] request_completed              duration_ms=0 method=GET path=/health request_id=f459df69a49548ca9cd85803f976df2d status=200
+INFO:     127.0.0.1:55656 - "GET /health HTTP/1.1" 200 OK
+2026-06-07T11:05:03.679440Z [info     ] request_completed              duration_ms=36 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 status=201
+INFO:     127.0.0.1:58617 - "POST /api/runs HTTP/1.1" 201 Created
+2026-06-07T11:05:03.703927Z [info     ] planner_draft_start            has_context=False method=POST path=/api/runs prompt_chars=16 request_id=639ecff887c9428c9946236681830be6
+2026-06-07T11:05:16.717538Z [info     ] request_completed              duration_ms=15 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=530ca0c99cb944e8804e4c94ac54a534 status=200
+INFO:     127.0.0.1:58716 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:21.800767Z [info     ] request_completed              duration_ms=6 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=e8d1c87131464aafa69e3c97337fa5f4 status=200
+INFO:     127.0.0.1:65294 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:26.827134Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=f4476ceeb234484293bff1c7581535e7 status=200
+INFO:     127.0.0.1:65324 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:31.854108Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=ab59b081a222411090769469d7f06b6a status=200
+INFO:     127.0.0.1:65346 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:36.883589Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=6417863313434fe2a86b57f064fca81a status=200
+INFO:     127.0.0.1:53654 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:41.924241Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=1a749ad483894e7da5b1019faf374ddb status=200
+INFO:     127.0.0.1:53678 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-06-07T11:05:45.387933Z [info     ] ollama_chat                    finish_reason=stop latency_ms=41673 method=POST model=qwen2.5-coder:7b path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=388 tokens_out=1357
+2026-06-07T11:05:45.398994Z [info     ] planner_draft_done             latency_ms=41673 method=POST open_questions=4 path=/api/runs request_id=639ecff887c9428c9946236681830be6 user_stories=5
+2026-06-07T11:05:45.433463Z [info     ] planner_critique_start         method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 user_stories=5
+2026-06-07T11:05:46.998005Z [info     ] request_completed              duration_ms=64 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=0ba375cd997c40f9951f15639725b698 status=200
+INFO:     127.0.0.1:53714 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:05:52.037707Z [info     ] request_completed              duration_ms=8 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=3b2fcca33f49427db80dc2bf90e9e28b status=200
+INFO:     127.0.0.1:61253 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-06-07T11:05:52.525533Z [info     ] ollama_chat                    finish_reason=stop latency_ms=7086 method=POST model=qwen2.5-coder:7b path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=1812 tokens_out=222
+2026-06-07T11:05:52.536174Z [info     ] planner_critique_done          issues=2 latency_ms=7086 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 score=85 should_revise=True
+2026-06-07T11:05:52.568982Z [info     ] planner_revise_start           issues=2 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 score=85
+2026-06-07T11:05:57.060810Z [info     ] request_completed              duration_ms=9 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=4fef6e3bac0e42da81cd2e4fee5a9102 status=200
+INFO:     127.0.0.1:61287 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:02.083368Z [info     ] request_completed              duration_ms=8 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=e6215c38aacd4d2190269ba84545a3d9 status=200
+INFO:     127.0.0.1:61309 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:07.102203Z [info     ] request_completed              duration_ms=9 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=a1ea5275be6f44599696e3b516c237b1 status=200
+INFO:     127.0.0.1:61337 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:09.455241Z [info     ] ws_snapshot_sent               run_id=672ed88bc3634cebab46a7462255cb63 status=completed subscriber_count=1
+2026-06-07T11:06:10.658753Z [info     ] request_completed              duration_ms=3 method=OPTIONS path=/api/runs request_id=40c6987d600649a281f42a5546017027 status=200
+INFO:     127.0.0.1:58190 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-07T11:06:10.668952Z [info     ] request_completed              duration_ms=10 method=OPTIONS path=/api/runs request_id=c0e56164665147d5935ffc1f3dd584d0 status=200
+INFO:     127.0.0.1:50722 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-07T11:06:10.691773Z [info     ] request_completed              duration_ms=39 method=GET path=/api/stats request_id=988672a251fb4e8494c7e348debeef3e status=200
+INFO:     127.0.0.1:60259 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-07T11:06:10.706338Z [info     ] request_completed              duration_ms=6 method=GET path=/api/stats request_id=9a29d55a38874a8baba531ba2acba853 status=200
+INFO:     127.0.0.1:50722 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-07T11:06:10.725322Z [info     ] request_completed              duration_ms=47 method=GET path=/api/runs request_id=2dc0d0e1c3d94553adf145d526f84f0a status=200
+INFO:     127.0.0.1:58190 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-07T11:06:10.749534Z [info     ] request_completed              duration_ms=16 method=GET path=/api/runs request_id=aa996dec641a4bd195487d038e76bc32 status=200
+INFO:     127.0.0.1:50722 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-07T11:06:11.681965Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=running subscriber_count=1
+2026-06-07T11:06:12.136212Z [info     ] request_completed              duration_ms=8 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=bd5f2398f6fa493ba86743469f52219a status=200
+INFO:     127.0.0.1:62976 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:17.160180Z [info     ] request_completed              duration_ms=8 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=e7c09b11fc684d249bca2d35fe811965 status=200
+INFO:     127.0.0.1:63005 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:22.188664Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=2af5115f56e748cb989dcbd78ae8a9ef status=200
+INFO:     127.0.0.1:63031 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:27.219194Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=4d7f9eaaee644033905b3c131715e662 status=200
+INFO:     127.0.0.1:63059 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-06-07T11:06:28.323213Z [info     ] ollama_chat                    finish_reason=stop latency_ms=35743 method=POST model=qwen2.5-coder:7b path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=1787 tokens_out=1361
+2026-06-07T11:06:28.333900Z [info     ] planner_revise_done            latency_ms=35743 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 user_stories=5
+2026-06-07T11:06:28.361902Z [info     ] planner_critique_start         method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 user_stories=5
+2026-06-07T11:06:32.248197Z [info     ] request_completed              duration_ms=9 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=45f0e3e550b74f4aa5e3183272c7f27e status=200
+INFO:     127.0.0.1:63087 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-06-07T11:06:36.819455Z [info     ] ollama_chat                    finish_reason=stop latency_ms=8451 method=POST model=qwen2.5-coder:7b path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=1794 tokens_out=289
+2026-06-07T11:06:36.829401Z [info     ] planner_critique_done          issues=3 latency_ms=8451 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 score=85 should_revise=True
+2026-06-07T11:06:36.860608Z [info     ] designer_start                 method=POST path=/api/runs prd_title='Bakery Website' request_id=639ecff887c9428c9946236681830be6
+2026-06-07T11:06:37.278774Z [info     ] request_completed              duration_ms=6 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=4d88b3f508264ac7a5346800892b9429 status=200
+INFO:     127.0.0.1:63117 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:42.311912Z [info     ] request_completed              duration_ms=9 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=f8d1199755724142acac8962f3eec812 status=200
+INFO:     127.0.0.1:63145 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:47.341682Z [info     ] request_completed              duration_ms=7 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=c0c308d25d7845839daef0e54ae944bc status=200
+INFO:     127.0.0.1:63173 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+2026-06-07T11:06:49.572040Z [info     ] ollama_chat                    finish_reason=stop latency_ms=12704 method=POST model=qwen2.5-coder:7b path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=1806 tokens_out=443
+2026-06-07T11:06:49.582469Z [info     ] designer_done                  components=4 data_models=3 latency_ms=12704 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6
+2026-06-07T11:06:49.652787Z [info     ] coder_start                    components=4 method=POST path=/api/runs prd_title='Bakery Website' request_id=639ecff887c9428c9946236681830be6
+AFC is enabled with max remote calls: 10.
+2026-06-07T11:06:49.666110Z [info     ] ws_client_disconnected         run_id=b6346bf589054d7bb6aba85a175f980a
+2026-06-07T11:06:52.363311Z [info     ] request_completed              duration_ms=5 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=f0c6a654a1e7437492d7a12b1ff4617a status=200
+INFO:     127.0.0.1:63197 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:06:57.378320Z [info     ] request_completed              duration_ms=4 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=1ce32225bb2241dfa078411ac0660d04 status=200
+INFO:     127.0.0.1:63226 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:07:02.400744Z [info     ] request_completed              duration_ms=5 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=c509ad01b98540709663837e43d2bedd status=200
+INFO:     127.0.0.1:63251 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:07:07.417294Z [info     ] request_completed              duration_ms=4 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=a59fe31b4b674f748d4effc78a7c1a86 status=200
+INFO:     127.0.0.1:63277 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:07:12.434776Z [info     ] request_completed              duration_ms=8 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=3d446a2aa8b2402ea8a053e027223c37 status=200
+INFO:     127.0.0.1:63299 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:07:17.451155Z [info     ] request_completed              duration_ms=5 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=cdecd352bce94718bf0653e2eb921dca status=200
+INFO:     127.0.0.1:63326 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent "HTTP/1.1 200 OK"
+2026-06-07T11:07:21.665198Z [info     ] gemini_chat                    finish_reason=FinishReason.STOP latency_ms=32003 method=POST model=gemini-2.5-flash-lite path=/api/runs request_id=639ecff887c9428c9946236681830be6 structured=True tokens_in=10248 tokens_out=8206
+2026-06-07T11:07:21.672444Z [info     ] coder_done                     files=1 latency_ms=32003 method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6
+2026-06-07T11:07:21.697430Z [info     ] orchestrator_run_completed     method=POST path=/api/runs request_id=639ecff887c9428c9946236681830be6 run_id=b6346bf589054d7bb6aba85a175f980a
+2026-06-07T11:07:22.469974Z [info     ] request_completed              duration_ms=6 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a request_id=0835d42c68754434820628dfbf2e8f72 status=200
+INFO:     127.0.0.1:63349 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a HTTP/1.1" 200 OK
+2026-06-07T11:07:32.552449Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-07T11:09:10.680766Z [info     ] request_completed              duration_ms=16 method=GET path=/api/runs/b6346bf589054d7bb6aba85a175f980a/code.zip request_id=b5f511a09cc04539b4e3bbd6defbd836 status=200
+INFO:     127.0.0.1:62649 - "GET /api/runs/b6346bf589054d7bb6aba85a175f980a/code.zip HTTP/1.1" 200 OK
+2026-06-09T17:51:10.771692Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-09T18:35:01.263253Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:53.641392Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:54.746434Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:55.770628Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:56.804443Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:57.832850Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:09:57.982159Z [info     ] request_completed              duration_ms=7 method=OPTIONS path=/api/stats request_id=fef55a52b898452eab61a5749d85ed59 status=200
+INFO:     127.0.0.1:53424 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:09:57.993090Z [info     ] request_completed              duration_ms=1 method=OPTIONS path=/api/runs request_id=56dc594b20034b0a9ec097b4593621c9 status=200
+INFO:     127.0.0.1:65078 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\miniconda3\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\miniconda3\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+    self._sock.shutdown(socket.SHUT_RDWR)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+2026-06-11T17:09:58.032332Z [info     ] request_completed              duration_ms=39 method=OPTIONS path=/api/stats request_id=bc2d01a0dc1347189d0e46b60bfbb3a4 status=200
+INFO:     127.0.0.1:49336 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:09:58.041441Z [info     ] request_completed              duration_ms=48 method=OPTIONS path=/api/runs request_id=a423b439ebbd4df6bc67e80a7e05f352 status=200
+INFO:     127.0.0.1:58693 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+Traceback (most recent call last):
+  File "C:\Users\Mehereswar\miniconda3\Lib\asyncio\events.py", line 89, in _run
+    self._context.run(self._callback, *self._args)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mehereswar\miniconda3\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+    self._sock.shutdown(socket.SHUT_RDWR)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+2026-06-11T17:09:58.105583Z [info     ] request_completed              duration_ms=55 method=GET path=/api/stats request_id=41304b94e73040ad8daf393fd926a45d status=200
+INFO:     127.0.0.1:56662 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:09:58.140143Z [info     ] request_completed              duration_ms=26 method=GET path=/api/stats request_id=07fb0ebdffce449e8553e27a4c214d27 status=200
+INFO:     127.0.0.1:59224 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:09:58.147241Z [info     ] request_completed              duration_ms=94 method=GET path=/api/runs request_id=4a46e6a878df4068b92144d1ad9c95a4 status=200
+INFO:     127.0.0.1:62725 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:09:58.174817Z [info     ] request_completed              duration_ms=19 method=GET path=/api/runs request_id=d7da45b1eace4072921d61a97cee713f status=200
+INFO:     127.0.0.1:59224 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:10:01.985900Z [info     ] request_completed              duration_ms=16 method=GET path=/api/runs request_id=0eca050b099844c98519f6a2bb3bcb24 status=200
+INFO:     127.0.0.1:59224 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:14:47.979340Z [info     ] request_completed              duration_ms=28 method=GET path=/api/stats request_id=e356508f2e7d40e9b32660a4e19b803f status=200
+INFO:     127.0.0.1:62228 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:14:47.993391Z [info     ] request_completed              duration_ms=41 method=GET path=/api/runs request_id=b5f7e1dab8fc4f0b87746179d514b81f status=200
+INFO:     127.0.0.1:51407 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:15:55.117871Z [info     ] request_completed              duration_ms=6 method=GET path=/api/stats request_id=8917368d6cce4fb28e9776bb54c66f07 status=200
+INFO:     127.0.0.1:64760 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:16:28.651424Z [info     ] request_completed              duration_ms=2 method=OPTIONS path=/api/stats request_id=d502a799cc4f49fdbe30cb2b7d42d7a2 status=200
+INFO:     127.0.0.1:54667 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:16:28.679341Z [info     ] request_completed              duration_ms=1 method=OPTIONS path=/api/runs request_id=5c5e94b9334a415e9b54fbfc23dbe3a8 status=200
+INFO:     127.0.0.1:61929 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:16:28.688561Z [info     ] request_completed              duration_ms=9 method=OPTIONS path=/api/stats request_id=2339d78ed74c47ed8aed7a340716e728 status=200
+INFO:     127.0.0.1:54260 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:16:28.693282Z [info     ] request_completed              duration_ms=5 method=OPTIONS path=/api/runs request_id=b43b766900d84b8daf4f2fb5d5d5c089 status=200
+INFO:     127.0.0.1:62321 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:16:28.722673Z [info     ] request_completed              duration_ms=43 method=GET path=/api/stats request_id=b28d9207b68048bc97d8010cd6e6766d status=200
+INFO:     127.0.0.1:54667 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:16:28.782798Z [info     ] request_completed              duration_ms=81 method=GET path=/api/runs request_id=59b09a6ba6fb4f83b3bee8068d37e11d status=200
+INFO:     127.0.0.1:61929 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:16:28.790397Z [info     ] request_completed              duration_ms=15 method=GET path=/api/stats request_id=001d4a8642ca45d28696fab8e9c7a442 status=200
+INFO:     127.0.0.1:54260 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:16:28.812192Z [info     ] request_completed              duration_ms=23 method=GET path=/api/runs request_id=49cdf0f2847444d8bef362438bfc609f status=200
+INFO:     127.0.0.1:54667 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:16:32.664627Z [info     ] request_completed              duration_ms=9 method=GET path=/api/runs request_id=f8b6e7bf7f624907981d924e71d99c32 status=200
+INFO:     127.0.0.1:54667 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:17:10.225215Z [info     ] request_completed              duration_ms=11 method=GET path=/api/stats request_id=312830bed4fa48508bbbc74f0f389037 status=200
+INFO:     127.0.0.1:54643 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:17:10.245703Z [info     ] request_completed              duration_ms=28 method=GET path=/api/runs request_id=ec03d4b0322146b1845f2b7a0062da4b status=200
+INFO:     127.0.0.1:60768 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:17:57.449840Z [info     ] request_completed              duration_ms=9 method=GET path=/api/stats request_id=a2b60ae6ca59452c94de2442c9be572a status=200
+INFO:     127.0.0.1:61361 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:17:57.465014Z [info     ] request_completed              duration_ms=23 method=GET path=/api/runs request_id=11c46db8c20f4fed9dad6b3b4b20a2a5 status=200
+INFO:     127.0.0.1:59828 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:17:59.952689Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:18:01.026808Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:18:02.053573Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:18:03.076389Z [info     ] ws_snapshot_sent               run_id=b6346bf589054d7bb6aba85a175f980a status=completed subscriber_count=1
+2026-06-11T17:18:03.113775Z [info     ] request_completed              duration_ms=9 method=GET path=/api/stats request_id=45a3f636c9f34b3b9744e86e34826056 status=200
+INFO:     127.0.0.1:62836 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:18:03.149025Z [info     ] request_completed              duration_ms=44 method=GET path=/api/runs request_id=f1700d914b384140945e13c9efc3f3e1 status=200
+INFO:     127.0.0.1:58528 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:18:03.159180Z [info     ] request_completed              duration_ms=31 method=GET path=/api/stats request_id=ad22081f20e94e1086fbb18d2831ece4 status=200
+INFO:     127.0.0.1:55192 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:18:03.182267Z [info     ] request_completed              duration_ms=25 method=GET path=/api/runs request_id=b703675dce724803883a8231e431989f status=200
+INFO:     127.0.0.1:62836 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:22:34.874543Z [info     ] request_completed              duration_ms=5 method=GET path=/api/stats request_id=c4aee20173374bfd93766888e8a41bc9 status=200
+INFO:     127.0.0.1:59491 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:22:36.847399Z [info     ] request_completed              duration_ms=26 method=GET path=/api/stats request_id=614386c50b2f4854a489599a488e4cc4 status=200
+INFO:     127.0.0.1:56737 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:22:36.865620Z [info     ] request_completed              duration_ms=43 method=GET path=/api/runs request_id=71bc8015a61947089cc10efe35f846f1 status=200
+INFO:     127.0.0.1:52725 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:22:40.826503Z [info     ] request_completed              duration_ms=12 method=GET path=/api/runs request_id=5dd5a2ae5dd1465dbc08eda06f44b0bf status=200
+INFO:     127.0.0.1:52725 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:12.518091Z [info     ] request_completed              duration_ms=0 method=OPTIONS path=/api/stats request_id=878af832a5d44a16a5f10df6ed9891da status=200
+INFO:     127.0.0.1:51788 - "OPTIONS /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:29:12.530203Z [info     ] request_completed              duration_ms=0 method=OPTIONS path=/api/runs request_id=61d76caca152432b887231dbcf8ffc58 status=200
+INFO:     127.0.0.1:51599 - "OPTIONS /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:12.544118Z [info     ] request_completed              duration_ms=8 method=GET path=/api/stats request_id=3c59d26591f84c77808ef2b221eb447d status=200
+INFO:     127.0.0.1:51788 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:29:12.560726Z [info     ] request_completed              duration_ms=24 method=GET path=/api/runs request_id=b5cf5d1e62d645e5b2534d0351e4d6cf status=200
+INFO:     127.0.0.1:51599 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:16.530322Z [info     ] request_completed              duration_ms=18 method=GET path=/api/runs request_id=b5383940f4774910b12620e1c9e03f73 status=200
+INFO:     127.0.0.1:51599 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:20.523377Z [info     ] request_completed              duration_ms=13 method=GET path=/api/runs request_id=8c24b2f895604535b3e3a1e74717931a status=200
+INFO:     127.0.0.1:51599 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:22.520926Z [info     ] request_completed              duration_ms=4 method=GET path=/api/stats request_id=070e5edbb8364fa4874c6f488ea1a1cc status=200
+INFO:     127.0.0.1:51599 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:29:24.526159Z [info     ] request_completed              duration_ms=16 method=GET path=/api/runs request_id=b7fa94c2fb114ef780913af98fa7b5ae status=200
+INFO:     127.0.0.1:51599 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:28.524381Z [info     ] request_completed              duration_ms=16 method=GET path=/api/runs request_id=155824cb5e99466cb7ea326a2dabc38b status=200
+INFO:     127.0.0.1:51599 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:37.727963Z [info     ] request_completed              duration_ms=8 method=GET path=/api/stats request_id=6fbbb67525904d43a322f5124d372300 status=200
+INFO:     127.0.0.1:63601 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:29:37.744961Z [info     ] request_completed              duration_ms=25 method=GET path=/api/runs request_id=c9f1011b432947ebb936c5f92e89b50c status=200
+INFO:     127.0.0.1:49694 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK
+2026-06-11T17:29:40.875182Z [info     ] request_completed              duration_ms=12 method=GET path=/ request_id=b2a8ca6c3ea54b10a3f8e8136d948873 status=404
+INFO:     127.0.0.1:61949 - "GET / HTTP/1.1" 404 Not Found
+2026-06-11T17:29:41.003530Z [info     ] request_completed              duration_ms=1 method=GET path=/favicon.ico request_id=61d89a617e114487ad81899782ca9943 status=404
+INFO:     127.0.0.1:61949 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2026-06-11T17:31:37.767832Z [info     ] request_completed              duration_ms=14 method=GET path=/api/stats request_id=f74c189242c24eae90261aa3d6fb83eb status=200
+INFO:     127.0.0.1:51114 - "GET /api/stats HTTP/1.1" 200 OK
+2026-06-11T17:31:37.785364Z [info     ] request_completed              duration_ms=31 method=GET path=/api/runs request_id=dc69d574cd734ccd8c8f1d546c6af307 status=200
+INFO:     127.0.0.1:59007 - "GET /api/runs?limit=20 HTTP/1.1" 200 OK

@@ -42,7 +42,9 @@ class ArtifactKind(str, enum.Enum):
     RESEARCH_NOTES = "research_notes"
     CRITIQUE = "critique"
     SYSTEM_DESIGN = "system_design"
+    SPRINT_PLAN = "sprint_plan"
     CODE = "code"
+    TEST_SUITE = "test_suite"
 
 
 class Run(Base):

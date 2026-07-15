@@ -181,7 +181,7 @@ function RootComponent() {
               </LiquidButton>
             </div>
             
-            <div className="absolute bottom-8 right-8 z-50">
+            <div className="fixed bottom-8 right-8 z-50">
               <ThemeTextToggle />
             </div>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

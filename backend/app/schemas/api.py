@@ -8,7 +8,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models import AgentStep, Artifact, ArtifactKind, Run, RunStatus
 
@@ -23,10 +23,43 @@ class CreateRunRequest(BaseModel):
 
 
 class DecisionRequest(BaseModel):
-    """Human decision at an approval gate."""
+    """Human decision at an approval gate.
 
-    decision: Literal["approve", "reject"]
+    `approve` resumes the pipeline, `reject` cancels the run, and `revise`
+    re-runs the just-completed stage with the reviewer's feedback, producing a
+    new artifact version and pausing again at the same gate.
+    """
+
+    decision: Literal["approve", "reject", "revise"]
     feedback: str | None = Field(default=None, max_length=4000)
+
+    @model_validator(mode="after")
+    def _feedback_required_for_revise(self) -> "DecisionRequest":
+        if self.decision == "revise" and not (self.feedback or "").strip():
+            raise ValueError("feedback is required when decision is 'revise'")
+        return self
+
+
+class ClarificationAnswersRequest(BaseModel):
+    """User answers to the clarify stage's questions, keyed by question id."""
+
+    answers: dict[str, str] = Field(min_length=1)
+
+
+class ArtifactVersionSummary(BaseModel):
+    """Content-free artifact version entry for history listings."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    version: int
+    created_at: datetime
+
+
+class ArtifactVersionsResponse(BaseModel):
+    kind: ArtifactKind
+    versions: list[ArtifactVersionSummary]
+    total: int
 
 
 class RunSummary(BaseModel):

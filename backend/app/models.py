@@ -45,6 +45,8 @@ class ArtifactKind(str, enum.Enum):
     SPRINT_PLAN = "sprint_plan"
     CODE = "code"
     TEST_SUITE = "test_suite"
+    VALIDATION_REPORT = "validation_report"
+    REVIEW_REPORT = "review_report"
 
 
 class Run(Base):

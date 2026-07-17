@@ -13,7 +13,7 @@ from app.agents.prompts.coder import CODE_SYSTEM_PROMPT
 from app.llm.client import get_coder_llm_client
 from app.llm.types import LLMClient, TokenUsage
 from app.models import ArtifactKind
-from app.schemas import PRD, SystemDesign
+from app.schemas import PRD, SprintPlan, SystemDesign
 from app.schemas.code import CodeBundle
 
 
@@ -41,7 +41,9 @@ class CoderAgent(BaseAgent):
         # an explicit client (e.g. a test stub) still wins.
         super().__init__(llm=llm if llm is not None else get_coder_llm_client())
 
-    async def build(self, prd: PRD, design: SystemDesign) -> CoderOutput:
+    async def build(
+        self, prd: PRD, design: SystemDesign, sprint_plan: SprintPlan | None = None
+    ) -> CoderOutput:
         user_prompt = (
             "Implement a minimal, runnable v1 of this project.\n\n"
             "PRD (JSON):\n"
@@ -49,6 +51,11 @@ class CoderAgent(BaseAgent):
             "System design (JSON):\n"
             f"{design.model_dump_json(exclude_none=True)}"
         )
+        if sprint_plan is not None:
+            user_prompt += (
+                "\n\nSprint plan (JSON):\n"
+                f"{sprint_plan.model_dump_json(exclude_none=True)}"
+            )
         self.logger.info(
             "coder_start",
             prd_title=prd.title,

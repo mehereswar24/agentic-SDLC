@@ -26,6 +26,7 @@ logger = get_logger(__name__)
 class EventType(str, enum.Enum):
     RUN_STARTED = "run.started"
     STEP_STARTED = "step.started"
+    STEP_PROGRESS = "step.progress"
     STEP_COMPLETED = "step.completed"
     STEP_FAILED = "step.failed"
     ARTIFACT_CREATED = "artifact.created"

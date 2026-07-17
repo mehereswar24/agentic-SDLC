@@ -30,7 +30,7 @@ function ThemeTextToggle() {
   return (
     <button 
       onClick={toggle}
-      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface/30 backdrop-blur-md border border-line/30 shadow-sm hover:bg-surface/50 transition-all duration-300 text-xs font-medium text-foreground group"
+      className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card/40 backdrop-blur-md border border-border/60 shadow-sm hover:bg-card/70 transition-all duration-300 text-xs font-medium text-foreground group"
     >
       <div className="relative flex h-4 w-4 items-center justify-center">
         <Sun className={`absolute h-4 w-4 transition-all duration-500 ${isDark ? 'rotate-90 opacity-0 scale-0' : 'rotate-0 opacity-100 scale-100'}`} />
@@ -128,6 +128,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+    scripts: [
+      {
+        // Apply the saved theme before first paint to avoid a light-mode flash.
+        children:
+          "(function(){try{var t=localStorage.getItem('theme');var d=t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}})()",
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -181,7 +188,8 @@ function RootComponent() {
               </LiquidButton>
             </div>
             
-            <div className="fixed bottom-8 right-8 z-50">
+            {/* Bottom-left so the run pages' chat dock owns bottom-right. */}
+            <div className="fixed bottom-8 left-8 z-50">
               <ThemeTextToggle />
             </div>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

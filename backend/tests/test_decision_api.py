@@ -17,7 +17,17 @@ from app.orchestrator.events import _reset_event_bus, get_event_bus
 from app.orchestrator.repository import RunRepository
 from app.orchestrator.runner import Orchestrator
 from app.orchestrator.runtime import OrchestratorRuntime
-from tests.fixtures import FastPlanner, StubCoder, StubDesigner, StubSprintPlanner, StubTester
+from tests.fixtures import (
+    FastPlanner,
+    StubCoder,
+    StubDesigner,
+    StubDesignReviewer,
+    StubPlannerReviewer,
+    StubRequirementAnalyzer,
+    StubSemanticValidator,
+    StubSprintPlanner,
+    StubTester,
+)
 
 
 @pytest_asyncio.fixture
@@ -39,6 +49,11 @@ async def configured_runtime(
             sprint_planner=StubSprintPlanner(),
             coder=StubCoder(),
             tester=StubTester(),
+            requirement_analyzer=StubRequirementAnalyzer(),
+            planner_reviewer=StubPlannerReviewer(),
+            architecture_reviewer=StubDesignReviewer("architecture_reviewer"),
+            security_reviewer=StubDesignReviewer("security_reviewer"),
+            semantic_validator=StubSemanticValidator(),
         )
 
     runtime = OrchestratorRuntime(orchestrator_factory=factory)
@@ -79,36 +94,28 @@ async def test_approve_advances_pipeline_to_completion(
         await client.post("/api/runs", json={"prompt": "habit tracker"})
     ).json()["id"]
 
-    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
-    assert body["status"] == "awaiting_human"
-    assert body["meta"]["awaiting_stage"] == "design"
-
-    res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
-    assert res.status_code == 200, res.text
-
-    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
-    assert body["status"] == "awaiting_human"
-    assert body["meta"]["awaiting_stage"] == "sprint_plan"
-
-    res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
-    assert res.status_code == 200, res.text
-
-    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
-    assert body["status"] == "awaiting_human"
-    assert body["meta"]["awaiting_stage"] == "build"
-
-    res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
-    assert res.status_code == 200, res.text
+    # Gate order: clarify → plan → design → sprint_plan, then build+test run free.
+    for awaiting in ["plan", "design", "sprint_plan", "build"]:
+        body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+        assert body["status"] == "awaiting_human"
+        assert body["meta"]["awaiting_stage"] == awaiting
+        res = await client.post(
+            f"/api/runs/{run_id}/decision", json={"decision": "approve"}
+        )
+        assert res.status_code == 200, res.text
 
     body = await _wait_for_status(client, run_id, _TERMINAL)
     assert body["status"] == "completed"
-    assert sorted(a["kind"] for a in body["artifacts"]) == [
+    assert sorted(set(a["kind"] for a in body["artifacts"])) == [
+        "clarifying_questions",
         "code",
         "critique",
         "prd",
+        "review_report",
         "sprint_plan",
         "system_design",
         "test_suite",
+        "validation_report",
     ]
 
 
@@ -156,3 +163,80 @@ async def test_decision_unknown_run_returns_404(
     )
     assert res.status_code == 404
     assert res.json()["error"]["code"] == "not_found"
+
+
+async def _advance_to_gate(
+    client: AsyncClient, run_id: str, awaiting: str
+) -> dict[str, Any]:
+    """Approve gates until the run pauses awaiting `awaiting`."""
+    while True:
+        body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+        assert body["status"] == "awaiting_human", body
+        if body["meta"]["awaiting_stage"] == awaiting:
+            return body
+        res = await client.post(
+            f"/api/runs/{run_id}/decision", json={"decision": "approve"}
+        )
+        assert res.status_code == 200, res.text
+
+
+async def test_revise_produces_new_version_and_repauses(
+    client: AsyncClient, configured_runtime: OrchestratorRuntime
+) -> None:
+    run_id = (
+        await client.post("/api/runs", json={"prompt": "habit tracker"})
+    ).json()["id"]
+
+    # Advance to the plan gate (clarify approved, plan completed).
+    await _advance_to_gate(client, run_id, "design")
+
+    res = await client.post(
+        f"/api/runs/{run_id}/decision",
+        json={"decision": "revise", "feedback": "Add offline support."},
+    )
+    assert res.status_code == 200, res.text
+
+    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+    assert body["status"] == "awaiting_human"
+    assert body["meta"]["awaiting_stage"] == "design"  # same gate
+    assert body["meta"]["pending_revision"] is None
+    assert len(body["meta"]["feedback_history"]) == 1
+    prd_versions = [a["version"] for a in body["artifacts"] if a["kind"] == "prd"]
+    assert sorted(prd_versions) == [1, 2]
+
+    # Approving after a revision resumes the normal pipeline.
+    res = await client.post(f"/api/runs/{run_id}/decision", json={"decision": "approve"})
+    assert res.status_code == 200, res.text
+    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+    assert body["meta"]["awaiting_stage"] == "sprint_plan"
+
+
+async def test_revise_requires_feedback(
+    client: AsyncClient, configured_runtime: OrchestratorRuntime
+) -> None:
+    run_id = (
+        await client.post("/api/runs", json={"prompt": "habit tracker"})
+    ).json()["id"]
+    await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+
+    res = await client.post(
+        f"/api/runs/{run_id}/decision", json={"decision": "revise"}
+    )
+    assert res.status_code == 422
+
+
+async def test_revise_at_clarify_gate_conflicts(
+    client: AsyncClient, configured_runtime: OrchestratorRuntime
+) -> None:
+    run_id = (
+        await client.post("/api/runs", json={"prompt": "habit tracker"})
+    ).json()["id"]
+    body = await _wait_for_status(client, run_id, _PAUSE_OR_DONE)
+    assert body["meta"]["awaiting_stage"] == "plan"  # paused at clarify gate
+
+    res = await client.post(
+        f"/api/runs/{run_id}/decision",
+        json={"decision": "revise", "feedback": "More questions please."},
+    )
+    assert res.status_code == 409
+    assert "clarifications" in res.json()["error"]["message"]

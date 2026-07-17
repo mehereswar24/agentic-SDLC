@@ -30,6 +30,10 @@ def _mock_async_client(monkeypatch: pytest.MonkeyPatch, handler) -> None:
 
 
 async def test_ollama_structured_output_parses(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Pin the model: a developer's .env may override OLLAMA_MODEL, and
+    # `result.model` echoes the configured model, not the mock response's.
+    monkeypatch.setenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+    get_settings.cache_clear()
     captured: dict = {}
 
     def handler(request: httpx.Request) -> httpx.Response:

@@ -41,13 +41,28 @@ class DesignerAgent(BaseAgent):
     def __init__(self, llm: LLMClient | None = None) -> None:
         super().__init__(llm=llm if llm is not None else get_designer_llm_client())
 
-    async def design(self, prd: PRD) -> DesignerOutput:
+    async def design(
+        self,
+        prd: PRD,
+        *,
+        previous: SystemDesign | None = None,
+        feedback: str | None = None,
+    ) -> DesignerOutput:
         user_prompt = (
             "Produce a lightweight architecture sketch for this PRD.\n\n"
             "PRD (JSON):\n"
             f"{prd.model_dump_json(indent=2)}"
         )
-        self.logger.info("designer_start", prd_title=prd.title)
+        if previous is not None and feedback:
+            user_prompt += (
+                "\n\nPrevious design (JSON):\n"
+                f"{previous.model_dump_json(indent=2)}\n\n"
+                f"A human reviewer rejected this design with the feedback below. "
+                f"Produce a corrected design that addresses the feedback while "
+                f"preserving every unaffected part of the previous design.\n"
+                f"Reviewer feedback:\n{feedback}"
+            )
+        self.logger.info("designer_start", prd_title=prd.title, is_revision=bool(feedback))
         result = await self._llm.chat(
             user_prompt,
             system=DESIGN_SYSTEM_PROMPT,

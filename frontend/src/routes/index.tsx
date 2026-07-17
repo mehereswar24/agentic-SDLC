@@ -1,27 +1,8 @@
 import { useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  Sparkles,
-  ArrowRight,
-  Activity,
-  Cpu,
-  Layers,
-  Loader2,
-  Trash2,
-  Info,
-  Search,
-} from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Sparkles, Loader2, Info } from "lucide-react";
 import { toast } from "sonner";
-import {
-  useRuns,
-  useStats,
-  useRunsRealtime,
-  createRun,
-  deleteRun,
-} from "@/lib/api.tanstack";
-import { StatusBadge } from "@/components/StatusBadge";
-import { STAGES } from "@/lib/types";
-import { Textarea } from "@/components/ui/textarea";
+import { createRun } from "@/lib/api.tanstack";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { LiquidButton } from "@/components/ui/button";
@@ -53,14 +34,11 @@ export const Route = createFileRoute("/")({
 
 
 function Dashboard() {
-  useRunsRealtime();
   const navigate = useNavigate();
-  const { data: runs } = useRuns();
-  const { data: stats } = useStats();
 
   const [prompt, setPrompt] = useState("");
   const [autoApprove, setAutoApprove] = useState(false);
-  const [maxRevisions, setMaxRevisions] = useState(2);
+  const [maxRevisions, setMaxRevisions] = useState(1);
   const [launching, setLaunching] = useState(false);
 
   const launch = async () => {
@@ -78,8 +56,6 @@ function Dashboard() {
       setLaunching(false);
     }
   };
-
-  const running = (stats?.byStatus.running ?? 0) + (stats?.byStatus.pending ?? 0);
 
   return (
     <div className="w-full min-h-screen px-4 py-12 flex flex-col items-center justify-center relative">
@@ -116,7 +92,7 @@ function Dashboard() {
         </div>
 
         {/* Settings below the search bar */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 bg-surface/30 backdrop-blur-md px-8 py-4 rounded-full border border-line/30 text-sm shadow-sm transition-opacity duration-300 opacity-80 hover:opacity-100">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 bg-card/40 backdrop-blur-md px-8 py-4 rounded-full border border-border/60 text-sm shadow-sm transition-opacity duration-300 opacity-80 hover:opacity-100">
           <label className="flex items-center gap-3 cursor-pointer group">
             <Switch checked={autoApprove} onCheckedChange={setAutoApprove} />
             <span>
@@ -124,7 +100,7 @@ function Dashboard() {
             </span>
           </label>
           
-          <div className="w-px h-6 bg-line/50 hidden sm:block"></div>
+          <div className="w-px h-6 bg-border hidden sm:block"></div>
 
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 whitespace-nowrap font-medium text-foreground">
@@ -144,7 +120,7 @@ function Dashboard() {
               value={[maxRevisions]}
               onValueChange={(v) => setMaxRevisions(v[0])}
               min={0}
-              max={4}
+              max={2}
               step={1}
               className="w-24 md:w-32"
             />

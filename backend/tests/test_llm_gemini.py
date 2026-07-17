@@ -128,6 +128,57 @@ async def test_chat_structured_raises_parse_error_on_garbage(
         await client.chat("greet me", schema=_Greeting)
 
 
+class _WithMapField(BaseModel):
+    """Pydantic dict fields emit additionalProperties, which Gemini rejects."""
+
+    title: str
+    section_confidence: dict[str, int]
+
+
+async def test_chat_map_schema_falls_back_to_prompt_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Schemas with dict fields must NOT be passed as native response_schema
+    (the Gemini API raises `additionalProperties is not supported`). Instead
+    the JSON schema rides in the system instruction and the raw text is
+    validated locally. Regression test for the PRD.section_confidence crash.
+    """
+    client = _make_client(monkeypatch)
+    response = _make_response(
+        text='{"title": "x", "section_confidence": {"goals": 90}}', parsed=None
+    )
+    mock_generate = AsyncMock(return_value=response)
+    client._client = MagicMock()
+    client._client.aio.models.generate_content = mock_generate
+
+    result = await client.chat("plan it", system="be terse", schema=_WithMapField)
+
+    assert isinstance(result.parsed, _WithMapField)
+    assert result.parsed.section_confidence == {"goals": 90}
+
+    config = mock_generate.await_args.kwargs["config"]
+    assert config.response_schema is None  # never sent natively
+    assert config.response_mime_type == "application/json"
+    assert "JSON Schema" in config.system_instruction
+    assert "be terse" in config.system_instruction
+
+
+async def test_chat_safe_schema_stays_native(monkeypatch: pytest.MonkeyPatch) -> None:
+    client = _make_client(monkeypatch)
+    parsed = _Greeting(greeting="hello", language="en")
+    response = _make_response(
+        text='{"greeting": "hello", "language": "en"}', parsed=parsed
+    )
+    mock_generate = AsyncMock(return_value=response)
+    client._client = MagicMock()
+    client._client.aio.models.generate_content = mock_generate
+
+    await client.chat("greet me", schema=_Greeting)
+
+    config = mock_generate.await_args.kwargs["config"]
+    assert config.response_schema is _Greeting
+
+
 async def test_chat_retries_on_429_then_succeeds(monkeypatch: pytest.MonkeyPatch) -> None:
     from google.genai import errors as genai_errors
 

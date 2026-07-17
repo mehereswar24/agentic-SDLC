@@ -1,37 +1,39 @@
 import type { RunStatus } from "./types";
 
+// Single source of truth for run-status styling. Pills stay monochrome
+// (loaded liquid-glass tokens); only the dot carries a small amount of hue.
 export const STATUS_META: Record<
   RunStatus,
-  { label: string; dot: string; className: string }
+  { label: string; dot: string; pill: string }
 > = {
   pending: {
     label: "Pending",
-    dot: "bg-muted-foreground",
-    className: "bg-muted text-muted-foreground",
+    dot: "bg-muted-foreground/60",
+    pill: "border-border bg-secondary text-muted-foreground",
   },
   running: {
     label: "Running",
-    dot: "bg-foreground animate-pulse",
-    className: "bg-foreground/10 text-foreground",
+    dot: "animate-pulse bg-foreground",
+    pill: "border-foreground/20 bg-foreground/10 text-foreground",
   },
   awaiting_human: {
     label: "Awaiting review",
-    dot: "bg-foreground",
-    className: "bg-foreground text-background",
+    dot: "bg-amber-500",
+    pill: "border-border bg-secondary text-foreground",
   },
   completed: {
     label: "Completed",
-    dot: "bg-foreground",
-    className: "bg-foreground/90 text-background",
+    dot: "bg-emerald-500",
+    pill: "border-border bg-secondary text-muted-foreground",
   },
   failed: {
     label: "Failed",
-    dot: "bg-destructive",
-    className: "bg-destructive/10 text-destructive",
+    dot: "bg-red-500",
+    pill: "border-destructive/30 bg-destructive/10 text-destructive",
   },
   cancelled: {
     label: "Cancelled",
-    dot: "bg-muted-foreground",
-    className: "bg-muted text-muted-foreground",
+    dot: "bg-muted-foreground/60",
+    pill: "border-border bg-secondary text-muted-foreground/70",
   },
 };

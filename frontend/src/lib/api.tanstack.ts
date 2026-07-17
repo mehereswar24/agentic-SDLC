@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
 
 export interface CreateRunInput {
@@ -9,10 +8,10 @@ export interface CreateRunInput {
 }
 
 export async function createRun(input: CreateRunInput): Promise<string> {
-  const res = await api.createRun({ 
+  const res = await api.createRun({
     prompt: input.prompt,
     auto_approve: input.autoApprove,
-    max_revisions: input.maxRevisions
+    max_revisions: input.maxRevisions,
   });
   return res.id;
 }
@@ -28,41 +27,7 @@ export function useRuns() {
       const res = await api.listRuns(50);
       return res.runs;
     },
-    refetchInterval: 3000,
-  });
-}
-
-export function useRun(runId: string) {
-  return useQuery({
-    queryKey: ["run", runId],
-    queryFn: () => api.getRun(runId),
-    refetchInterval: (query) => {
-      const data = query.state.data;
-      if (!data) return 2000;
-      return ["pending", "running", "awaiting_human"].includes(data.status) ? 2000 : false;
-    },
-  });
-}
-
-export function useSteps(runId: string) {
-  return useQuery({
-    queryKey: ["steps", runId],
-    queryFn: async () => {
-      const run = await api.getRun(runId);
-      return run.steps || [];
-    },
-    refetchInterval: 2000,
-  });
-}
-
-export function useArtifacts(runId: string) {
-  return useQuery({
-    queryKey: ["artifacts", runId],
-    queryFn: async () => {
-      const run = await api.getRun(runId);
-      return run.artifacts || [];
-    },
-    refetchInterval: 2000,
+    refetchInterval: 5000,
   });
 }
 
@@ -85,19 +50,6 @@ export function useStats() {
         totalTokens: s.tokens_in_total + s.tokens_out_total,
       } as Stats;
     },
-    refetchInterval: 5000,
+    refetchInterval: 10000,
   });
-}
-
-export function useRunRealtime(runId: string) {
-  // React query refetchInterval handles polling automatically now.
-  const qc = useQueryClient();
-  useEffect(() => {
-    // Optionally trigger an immediate refetch when mounting
-    qc.invalidateQueries({ queryKey: ["run", runId] });
-  }, [runId, qc]);
-}
-
-export function useRunsRealtime() {
-  // Handled by refetchInterval
 }

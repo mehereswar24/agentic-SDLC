@@ -28,7 +28,9 @@ export type ArtifactKind =
   | "system_design"
   | "code"
   | "sprint_plan"
-  | "test_suite";
+  | "test_suite"
+  | "validation_report"
+  | "review_report";
 
 export interface CreateRunRequest {
   prompt: string;
@@ -37,8 +39,50 @@ export interface CreateRunRequest {
 }
 
 export interface DecisionRequest {
-  decision: "approve" | "reject";
+  decision: "approve" | "reject" | "revise";
   feedback?: string;
+}
+
+export interface ClarifyingQuestion {
+  id: string;
+  category: string;
+  question: string;
+  options: string[];
+  required: boolean;
+}
+
+export interface ClarifyingQuestions {
+  questions: ClarifyingQuestion[];
+  assumptions: string[];
+  inferred_scope: string;
+}
+
+export type ReviewSeverity = "critical" | "high" | "medium" | "low" | "info";
+
+export interface ReviewFinding {
+  severity?: ReviewSeverity | string;
+  category?: string;
+  description: string;
+  location?: string;
+  suggestion?: string;
+}
+
+export interface ReviewReport {
+  reviewer: string;
+  score: number;
+  passed: boolean;
+  findings: ReviewFinding[];
+  recommendations: string[];
+  summary?: string;
+}
+
+export interface ValidationReport {
+  passed: boolean;
+  score: number;
+  issues: string[];
+  suggestions: string[];
+  artifact_kind: string;
+  checked_at?: string;
 }
 
 export interface RunSummary {
@@ -107,6 +151,7 @@ export interface PRD {
   risks: Array<{ description: string; severity: string; likelihood: string; mitigation: string }>;
   open_questions: string[];
   success_metrics: Array<{ name: string; target: string; instrumentation?: string | null }>;
+  section_confidence?: Record<string, number>;
 }
 
 export interface Critique {
@@ -197,7 +242,7 @@ export interface TestSuite {
   test_files: TestFile[];
 }
 
-export type PipelineStage = "plan" | "design" | "sprint_plan" | "build" | "test";
+export type PipelineStage = "clarify" | "plan" | "design" | "sprint_plan" | "build" | "test";
 
 export interface PipelineStageMeta {
   name: PipelineStage;
@@ -207,6 +252,12 @@ export interface PipelineStageMeta {
 }
 
 export const PIPELINE_STAGES: PipelineStageMeta[] = [
+  {
+    name: "clarify",
+    label: "Clarify",
+    description: "Analyses the brief and asks clarifying questions.",
+    artifact_kind: "clarifying_questions"
+  },
   {
     name: "plan",
     label: "Plan",
@@ -247,5 +298,37 @@ export type RunRow = RunSummary;
 export type AgentStepRow = AgentStepView;
 export type ArtifactRow = ArtifactView;
 export type RunMeta = RunSummary['meta'];
-export const ARTIFACT_FOR_STAGE: Record<string, ArtifactKind> = { plan: 'prd', design: 'system_design', sprint_plan: 'sprint_plan', build: 'code', test: 'test_suite' };
+export const ARTIFACT_FOR_STAGE: Record<string, ArtifactKind> = { clarify: 'clarifying_questions', plan: 'prd', design: 'system_design', sprint_plan: 'sprint_plan', build: 'code', test: 'test_suite' };
+
+/** Maps backend AgentStep.node values to the pipeline stage they belong to. */
+export const NODE_STAGE: Record<string, PipelineStage> = {
+  clarify: "clarify",
+  draft: "plan",
+  critique: "plan",
+  revise: "plan",
+  review_prd: "plan",
+  semantic_validate: "plan", // design-stage validations carry input.artifact_kind
+  design: "design",
+  revise_design: "design",
+  review_architecture_reviewer: "design",
+  review_security_reviewer: "design",
+  sprint_plan: "sprint_plan",
+  revise_sprint_plan: "sprint_plan",
+  build: "build",
+  test: "test",
+};
+
+/** Resolve a step node (or step.progress event) to its stage. */
+export function stageForNode(
+  node: string,
+  hint?: { artifact_kind?: string; stage?: string },
+): PipelineStage | undefined {
+  if (hint?.stage && PIPELINE_STAGES.some((s) => s.name === hint.stage)) {
+    return hint.stage as PipelineStage;
+  }
+  if (node === "semantic_validate" && hint?.artifact_kind === "system_design") {
+    return "design";
+  }
+  return NODE_STAGE[node];
+}
 

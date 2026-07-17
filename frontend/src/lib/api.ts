@@ -2,6 +2,8 @@
 // Reads VITE_API_URL at build/runtime; falls back to localhost:8000.
 
 import type {
+  ArtifactKind,
+  ArtifactView,
   ChatRequest,
   ChatResponse,
   CreateRunRequest,
@@ -99,13 +101,13 @@ export const api = {
     }),
 
   updateArtifact: (runId: string, kind: string, content: any) =>
-    request<RunSummary>(`/api/runs/${runId}/artifacts/${kind}`, {
+    request<ArtifactView>(`/api/runs/${runId}/artifacts/${kind}`, {
       method: "PUT",
       body: JSON.stringify(content),
     }),
 
   parseArtifact: (runId: string, kind: string, text: string) =>
-    request<RunSummary>(`/api/runs/${runId}/artifacts/${kind}/parse`, {
+    request<ArtifactView>(`/api/runs/${runId}/artifacts/${kind}/parse`, {
       method: "POST",
       body: JSON.stringify({ text }),
     }),
@@ -114,6 +116,24 @@ export const api = {
     request<RunSummary>(`/api/runs/${runId}/retry`, {
       method: "POST",
     }),
+
+  submitClarifications: (runId: string, answers: Record<string, string>) =>
+    request<RunSummary>(`/api/runs/${runId}/clarifications`, {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    }),
+
+  listArtifactVersions: (runId: string, kind: ArtifactKind) =>
+    request<{
+      kind: ArtifactKind;
+      versions: Array<{ id: string; version: number; created_at: string }>;
+      total: number;
+    }>(`/api/runs/${runId}/artifacts/${kind}/versions`),
+
+  getArtifactVersion: (runId: string, kind: ArtifactKind, version: number) =>
+    request<ArtifactView>(
+      `/api/runs/${runId}/artifacts/${kind}/versions/${version}`,
+    ),
 };
 
 export const apiUrl = API_URL;

@@ -43,3 +43,7 @@ class SystemDesign(BaseModel):
         description="External systems / APIs this design relies on.",
     )
     open_design_questions: list[str] = Field(default_factory=list)
+    confidence_scores: dict[str, int] = Field(
+        default_factory=dict,
+        description="Component name -> confidence score 0-100.",
+    )

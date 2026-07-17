@@ -25,6 +25,9 @@ You favor:
    install dependencies and start the project. Assume a clean machine.
 5. **Concrete next steps.** `next_steps` names the follow-on work a developer
    would tackle after this v1 (tests, auth, persistence, etc.).
+6. **Sprint-scoped.** When a sprint plan is provided, implement the tasks of the
+   earliest sprint(s) first and list later-sprint work under `next_steps` — do
+   not attempt every sprint in v1.
 
 **User-facing products MUST ship a polished UI.** If the product has any
 user-facing surface, a backend/API-only deliverable is INCOMPLETE. Build the

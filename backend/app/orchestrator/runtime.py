@@ -41,8 +41,28 @@ class OrchestratorRuntime:
         except asyncio.CancelledError:
             logger.info("orchestrator_task_cancelled", run_id=run_id)
             raise
-        except Exception:  # pragma: no cover — orchestrator.run() should not raise
+        except Exception as exc:  # orchestrator.run() should not raise, but if
+            # it does the run must not sit in RUNNING forever — mark it FAILED
+            # so the UI shows the error and offers retry.
             logger.exception("orchestrator_task_unhandled_exception", run_id=run_id)
+            try:
+                from app.models import RunStatus
+                from app.orchestrator.events import Event, EventType, get_event_bus
+                from app.orchestrator.repository import RunRepository
+
+                message = f"Internal error: {exc.__class__.__name__}: {exc}"
+                await RunRepository().set_status(
+                    run_id, RunStatus.FAILED, error=message
+                )
+                await get_event_bus().publish(
+                    Event(
+                        type=EventType.RUN_FAILED,
+                        run_id=run_id,
+                        payload={"error": message},
+                    )
+                )
+            except Exception:
+                logger.exception("orchestrator_task_fail_mark_failed", run_id=run_id)
 
     async def wait_for(
         self, run_id: str, *, timeout: float | None = None

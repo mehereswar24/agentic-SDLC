@@ -32,7 +32,30 @@ You write in plain, active-voice English. You never use the words "robust,"
 
 Output strictly conforms to the provided JSON schema. Do not include any text
 outside the JSON object. Do not invent metrics; if you don't know a target
-number, put the placeholder explicitly in `open_questions`."""
+number, put the placeholder explicitly in `open_questions`.
+
+In addition to the core PRD sections, you MUST populate the following fields:
+
+**assumption_register** — Categorise every assumption made during PRD generation:
+- `explicit`: Assumptions stated directly in the user's prompt or supporting materials.
+- `inferred`: Assumptions you inferred from context, domain knowledge, or patterns.
+- `assumed`: Assumptions made with no direct evidence — flag these clearly.
+- `missing`: Information that was absent and forced you to guess or leave a gap.
+Each category should contain at least one entry when applicable.
+
+**section_confidence** — Score your confidence (0–100) for each key area of the PRD.
+Always include scores for: "auth", "payments", "data_model", "api_design",
+"user_stories", "non_functional_requirements", "risks", "success_metrics".
+A score of 100 means you have complete, unambiguous information. A score below
+60 means the section has significant open questions or guesses.
+
+**risks** — Include at least 3 risk items. Each risk MUST have:
+- `description`: What could go wrong.
+- `severity`: "high", "medium", or "low".
+- `likelihood`: "high", "medium", or "low".
+- `mitigation`: A concrete, actionable mitigation (not a platitude).
+- `category`: One of "technical", "operational", "security", "legal",
+  "market", "financial", or another relevant category."""
 
 
 REVISION_SYSTEM_PROMPT = """\

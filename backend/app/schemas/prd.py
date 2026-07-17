@@ -90,6 +90,10 @@ class Risk(_StrictModel):
     mitigation: str = Field(
         description="Concrete action that reduces the risk, not a platitude.",
     )
+    category: str | None = Field(
+        default=None,
+        description="Risk category, e.g. 'technical', 'operational', 'security'.",
+    )
 
 
 class SuccessMetric(_StrictModel):
@@ -98,6 +102,27 @@ class SuccessMetric(_StrictModel):
     instrumentation: str | None = Field(
         default=None,
         description="How the metric is measured (events, dashboards, query).",
+    )
+
+
+class AssumptionRegister(BaseModel):
+    """Categorised assumption tracking for a PRD."""
+
+    explicit: list[str] = Field(
+        default_factory=list,
+        description="Assumptions explicitly stated in the prompt or brief.",
+    )
+    inferred: list[str] = Field(
+        default_factory=list,
+        description="Assumptions the agent inferred from context.",
+    )
+    assumed: list[str] = Field(
+        default_factory=list,
+        description="Assumptions made without evidence — highest risk.",
+    )
+    missing: list[str] = Field(
+        default_factory=list,
+        description="Information that was absent and had to be guessed or skipped.",
     )
 
 
@@ -130,3 +155,8 @@ class PRD(_StrictModel):
         description="Ambiguities the agent could not resolve — these gate downstream work.",
     )
     success_metrics: list[SuccessMetric]
+    section_confidence: dict[str, int] = Field(
+        default_factory=dict,
+        description="Section name -> confidence score 0-100 for each key area.",
+    )
+    assumption_register: AssumptionRegister | None = None

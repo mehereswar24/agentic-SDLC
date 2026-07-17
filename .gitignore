@@ -33,6 +33,22 @@ build/
 .DS_Store
 Thumbs.db
 
-# Node (for the future frontend)
+# Node
 node_modules/
 .next/
+
+# Frontend build outputs
+frontend/.output/
+frontend/.wrangler/
+frontend/dist/
+frontend/.tanstack/
+
+# Logs
+*.log
+backend-out.log
+backend-err.log
+backend-run.log
+frontend-run.log
+
+# Run artifacts
+run.json

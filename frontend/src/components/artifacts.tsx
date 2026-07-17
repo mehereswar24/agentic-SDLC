@@ -12,11 +12,16 @@ import {
   Copy,
   Check,
   Download,
-  File as FileIcon,
   FlaskConical,
+  FolderArchive,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { downloadCodeZip } from "@/lib/api";
+import { langForPath } from "@/lib/file-tree";
+import { useShiki } from "@/hooks/useShiki";
+import { FileTree } from "@/components/FileTree";
 import type {
   PRD,
   SystemDesign,
@@ -360,8 +365,26 @@ function CopyBtn({ text }: { text: string }) {
   );
 }
 
-export function CodeView({ bundle }: { bundle: CodeBundle }) {
+function CodeContent({ path, content }: { path: string; content: string }) {
+  const html = useShiki(content, langForPath(path));
+  if (html) {
+    return (
+      <div
+        className="max-h-[460px] overflow-auto p-4 text-xs leading-relaxed [&_pre]:!bg-transparent [&_code]:font-mono"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  }
+  return (
+    <pre className="max-h-[460px] overflow-auto p-4 font-mono text-xs leading-relaxed text-foreground">
+      <code>{content}</code>
+    </pre>
+  );
+}
+
+export function CodeView({ bundle, runId }: { bundle: CodeBundle; runId?: string }) {
   const [active, setActive] = useState(0);
+  const [zipping, setZipping] = useState(false);
   const file = bundle.files?.[active];
 
   return (
@@ -380,38 +403,53 @@ export function CodeView({ bundle }: { bundle: CodeBundle }) {
             ))}
           </div>
         </div>
-        <button
-          onClick={() =>
-            download(
-              `${bundle.project_name.replace(/\s+/g, "-").toLowerCase()}-bundle.json`,
-              JSON.stringify(bundle, null, 2),
-              "application/json",
-            )
-          }
-          className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-xs font-medium text-background transition-opacity hover:opacity-90"
-        >
-          <Download className="h-3.5 w-3.5" />
-          Download bundle
-        </button>
+        <div className="flex items-center gap-2">
+          {runId && (
+            <button
+              onClick={async () => {
+                setZipping(true);
+                try {
+                  await downloadCodeZip(runId);
+                } catch (e: any) {
+                  toast.error(e.message ?? "Download failed");
+                } finally {
+                  setZipping(false);
+                }
+              }}
+              disabled={zipping}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-xs font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+            >
+              {zipping ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <FolderArchive className="h-3.5 w-3.5" />
+              )}
+              Download ZIP
+            </button>
+          )}
+          <button
+            onClick={() =>
+              download(
+                `${bundle.project_name.replace(/\s+/g, "-").toLowerCase()}-bundle.json`,
+                JSON.stringify(bundle, null, 2),
+                "application/json",
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+          >
+            <Download className="h-3.5 w-3.5" />
+            JSON
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-[220px_1fr]">
+      <div className="grid gap-4 md:grid-cols-[230px_1fr]">
         <div className="glass max-h-[520px] overflow-auto rounded-2xl p-2">
-          {bundle.files?.map((f, i) => (
-            <button
-              key={f.path}
-              onClick={() => setActive(i)}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors",
-                i === active
-                  ? "bg-foreground text-background"
-                  : "text-muted-foreground hover:bg-accent",
-              )}
-            >
-              <FileIcon className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate font-mono">{f.path}</span>
-            </button>
-          ))}
+          <FileTree
+            files={bundle.files ?? []}
+            activeIndex={active}
+            onSelect={setActive}
+          />
         </div>
 
         {file && (
@@ -431,9 +469,7 @@ export function CodeView({ bundle }: { bundle: CodeBundle }) {
                 </button>
               </div>
             </div>
-            <pre className="max-h-[460px] overflow-auto p-4 font-mono text-xs leading-relaxed text-foreground">
-              <code>{file.content}</code>
-            </pre>
+            <CodeContent path={file.path} content={file.content} />
           </div>
         )}
       </div>
@@ -454,26 +490,11 @@ export function TestView({ suite }: { suite: TestSuite }) {
 
       <div className="grid gap-4 md:grid-cols-[240px_1fr]">
         <div className="glass max-h-[520px] overflow-auto rounded-2xl p-2">
-          {suite.test_files?.map((f, i) => (
-            <button
-              key={f.path}
-              onClick={() => setActive(i)}
-              className={cn(
-                "w-full rounded-lg px-2.5 py-2 text-left transition-colors",
-                i === active ? "bg-foreground text-background" : "hover:bg-accent",
-              )}
-            >
-              <div className="truncate font-mono text-xs">{f.path}</div>
-              <div
-                className={cn(
-                  "mt-0.5 text-[10px]",
-                  i === active ? "text-background/70" : "text-muted-foreground",
-                )}
-              >
-                {f.test_type}
-              </div>
-            </button>
-          ))}
+          <FileTree
+            files={suite.test_files ?? []}
+            activeIndex={active}
+            onSelect={setActive}
+          />
         </div>
 
         {file && (
@@ -481,17 +502,14 @@ export function TestView({ suite }: { suite: TestSuite }) {
             <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5">
               <div className="min-w-0">
                 <div className="truncate font-mono text-xs text-foreground">{file.path}</div>
-                {file.covers?.length > 0 && (
-                  <div className="truncate text-[11px] text-muted-foreground">
-                    covers: {file.covers.join(", ")}
-                  </div>
-                )}
+                <div className="truncate text-[11px] text-muted-foreground">
+                  {file.test_type}
+                  {file.covers?.length > 0 && <> · covers: {file.covers.join(", ")}</>}
+                </div>
               </div>
               <CopyBtn text={file.content} />
             </div>
-            <pre className="max-h-[460px] overflow-auto p-4 font-mono text-xs leading-relaxed text-foreground">
-              <code>{file.content}</code>
-            </pre>
+            <CodeContent path={file.path} content={file.content} />
           </div>
         )}
       </div>

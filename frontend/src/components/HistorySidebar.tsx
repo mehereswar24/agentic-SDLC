@@ -1,9 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { formatRelativeTime } from "@/lib/utils";
-import { Bot, Trash2, Clock, PanelLeftClose } from "lucide-react";
+import { Bot, Trash2, Clock } from "lucide-react";
 import { LiquidButton } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { useRuns, useStats } from "@/lib/api.tanstack";
+import { StatusBadge } from "@/components/StatusBadge";
+
 function formatCompact(num: number) {
   return new Intl.NumberFormat("en-US", { notation: "compact" }).format(num);
 }
@@ -19,17 +21,8 @@ export function HistorySidebar({ onClose }: { onClose?: () => void }) {
     },
   });
 
-  const { data: runs } = useQuery({
-    queryKey: ["runs"],
-    queryFn: () => api.getRuns(),
-    refetchInterval: 2000,
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ["stats"],
-    queryFn: () => api.getStats(),
-    refetchInterval: 5000,
-  });
+  const { data: runs } = useRuns();
+  const { data: stats } = useStats();
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
@@ -62,11 +55,11 @@ export function HistorySidebar({ onClose }: { onClose?: () => void }) {
             <div className="px-2 pb-2 text-xs font-medium text-muted-foreground">Overview</div>
             <div>
               <div className="grid grid-cols-2 gap-2 px-2 py-1">
-                <div className="rounded-lg bg-surface-2 p-3 border border-border">
+                <div className="rounded-lg bg-sidebar-accent p-3 border border-border">
                   <p className="text-[10px] text-muted-foreground">Total Runs</p>
                   <p className="text-lg font-semibold">{stats.totalRuns}</p>
                 </div>
-                <div className="rounded-lg bg-surface-2 p-3 border border-border">
+                <div className="rounded-lg bg-sidebar-accent p-3 border border-border">
                   <p className="text-[10px] text-muted-foreground">Tokens</p>
                   <p className="text-lg font-semibold">{formatCompact(stats.totalTokens)}</p>
                 </div>
@@ -88,7 +81,7 @@ export function HistorySidebar({ onClose }: { onClose?: () => void }) {
                   <Link
                     to="/runs/$runId"
                     params={{ runId: run.id }}
-                    className="flex flex-col items-start gap-1 p-3 h-auto w-full rounded-md transition-colors hover:bg-surface-2 hover:text-foreground text-left text-sm"
+                    className="flex flex-col items-start gap-1 p-3 h-auto w-full rounded-md transition-colors hover:bg-sidebar-accent hover:text-foreground text-left text-sm"
                   >
                     <div className="flex items-center w-full justify-between">
                       <span className="text-xs font-medium truncate pr-4">
@@ -106,11 +99,10 @@ export function HistorySidebar({ onClose }: { onClose?: () => void }) {
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                      <StatusBadge status={run.status} size="sm" />
                       <Clock className="h-3 w-3" />
-                      <span>{run.status}</span>
-                      <span className="ml-1">•</span>
-                      <span className="ml-1">
+                      <span>
                         {new Date(run.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>

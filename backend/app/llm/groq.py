@@ -18,6 +18,22 @@ from app.llm.types import LLMResult, TokenUsage
 
 logger = get_logger(__name__)
 
+
+def _compact_schema(node: Any) -> Any:
+    """Strip prose keys from a JSON schema — Groq's 12k TPM budget is tight,
+    and field descriptions (which double as prompt guidance for other
+    providers) can cost thousands of tokens."""
+    if isinstance(node, dict):
+        return {
+            k: _compact_schema(v)
+            for k, v in node.items()
+            if k not in ("description", "examples")
+        }
+    if isinstance(node, list):
+        return [_compact_schema(v) for v in node]
+    return node
+
+
 class GroqClient:
     def __init__(self, *, settings: Settings | None = None) -> None:
         self._settings = settings or get_settings()
@@ -42,6 +58,16 @@ class GroqClient:
         temperature: float = 0.7,
         max_output_tokens: int | None = None,
     ) -> LLMResult[Any]:
+        if schema is not None:
+            # Groq's json_object mode forces JSON but knows nothing about the
+            # target shape — embed the JSON schema so required fields survive.
+            schema_doc = json.dumps(_compact_schema(schema.model_json_schema()))
+            instruction = (
+                "Respond with ONLY a single JSON object that conforms to this "
+                f"JSON Schema (include every required field):\n{schema_doc}"
+            )
+            system = f"{system}\n\n{instruction}" if system else instruction
+
         messages: list[dict[str, str]] = []
         if system:
             messages.append({"role": "system", "content": system})
@@ -54,11 +80,13 @@ class GroqClient:
         }
         
         if max_output_tokens:
-            # Groq's free tier has a strict 12000 TPM limit. 
-            # We dynamically cap max_tokens so `prompt + max_tokens` stays under the limit.
+            # Groq's free tier has a strict 12000 TPM limit.
+            # We dynamically cap max_tokens so `prompt + max_tokens` stays under
+            # the limit. JSON-heavy prompts run ~3 chars/token, so divide by 3
+            # (not 3.5) and keep extra headroom — a 413 fails the whole stage.
             prompt_len = len(system or "") + len(prompt)
-            estimated_prompt_tokens = prompt_len // 3.5  # rough overestimate
-            remaining = max(1000, 11800 - int(estimated_prompt_tokens))
+            estimated_prompt_tokens = prompt_len // 3
+            remaining = max(1000, 11000 - int(estimated_prompt_tokens))
             body["max_tokens"] = min(max_output_tokens, remaining)
             
         # For Groq structured output, we use `response_format: {"type": "json_object"}`

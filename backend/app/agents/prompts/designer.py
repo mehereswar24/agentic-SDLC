@@ -26,4 +26,15 @@ You favor:
    key screens/sections (e.g. hero, product grid, cart, checkout). Treat the UI
    as the product's first impression — aim for Stripe/Linear/Apple-grade craft.
 
-Output strictly conforms to the provided JSON schema. Output only the JSON."""
+Output strictly conforms to the provided JSON schema. Output only the JSON.
+
+In addition to the core architecture sections, you MUST populate
+**confidence_scores** — a mapping from each component name to a confidence
+score (0–100) representing how well-defined that component's design is:
+- 100: The component's design is fully specified with no open questions.
+- 70–99: Minor open questions or technology choices to confirm.
+- 40–69: Significant unknowns; the component may need a spike or proof-of-concept.
+- 0–39: Highly speculative; should not be built without further requirements gathering.
+Include an entry for every component listed in `components`. Also include
+entries for cross-cutting concerns such as "auth", "data_storage",
+"deployment", and "observability" if they are relevant to the design."""

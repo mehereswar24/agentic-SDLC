@@ -135,6 +135,35 @@ class RunRepository:
                 s.expunge(r)
             return list(rows)
 
+    async def list_artifact_versions(
+        self, run_id: str, kind: ArtifactKind
+    ) -> list[Artifact]:
+        """All versions of one artifact kind, oldest first."""
+        async with session_scope() as s:
+            stmt = (
+                select(Artifact)
+                .where(Artifact.run_id == run_id, Artifact.kind == kind)
+                .order_by(Artifact.version.asc())
+            )
+            rows = (await s.execute(stmt)).scalars().all()
+            for a in rows:
+                s.expunge(a)
+            return list(rows)
+
+    async def get_artifact_version(
+        self, run_id: str, kind: ArtifactKind, version: int
+    ) -> Artifact | None:
+        async with session_scope() as s:
+            stmt = select(Artifact).where(
+                Artifact.run_id == run_id,
+                Artifact.kind == kind,
+                Artifact.version == version,
+            )
+            art = (await s.execute(stmt)).scalar_one_or_none()
+            if art is not None:
+                s.expunge(art)
+            return art
+
     async def latest_artifact(
         self, run_id: str, kind: ArtifactKind
     ) -> Artifact | None:

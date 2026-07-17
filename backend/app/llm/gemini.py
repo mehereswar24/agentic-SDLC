@@ -12,6 +12,7 @@ Design choices:
 """
 from __future__ import annotations
 
+import json
 import time
 from collections.abc import AsyncIterator
 from typing import Any, cast, overload
@@ -56,6 +57,34 @@ def _map_api_error(exc: genai_errors.APIError) -> LLMAPIError | LLMRateLimitErro
     if code == 429:
         return LLMRateLimitError(str(exc))
     return LLMAPIError(str(exc), status_code=code)
+
+
+_SCHEMA_SAFETY_CACHE: dict[type[BaseModel], bool] = {}
+
+
+def _schema_is_gemini_safe(schema: type[BaseModel]) -> bool:
+    """Whether Gemini's native `response_schema` can express this model.
+
+    The Gemini API rejects JSON schemas containing `additionalProperties`
+    (pydantic emits it for `dict[str, X]` map fields, e.g. PRD.section_confidence).
+    Unsafe schemas fall back to schema-in-prompt structured output.
+    """
+    cached = _SCHEMA_SAFETY_CACHE.get(schema)
+    if cached is not None:
+        return cached
+
+    def walk(node: Any) -> bool:
+        if isinstance(node, dict):
+            if node.get("additionalProperties") not in (None, False):
+                return False
+            return all(walk(v) for v in node.values())
+        if isinstance(node, list):
+            return all(walk(v) for v in node)
+        return True
+
+    safe = walk(schema.model_json_schema())
+    _SCHEMA_SAFETY_CACHE[schema] = safe
+    return safe
 
 
 class GeminiClient:
@@ -123,9 +152,21 @@ class GeminiClient:
         temperature: float = 0.7,
         max_output_tokens: int | None = None,
     ) -> LLMResult[Any]:
+        native_schema = schema is not None and _schema_is_gemini_safe(schema)
+        if schema is not None and not native_schema:
+            # Map-typed fields can't ride Gemini's response_schema — embed the
+            # JSON schema in the instructions and validate the raw text instead.
+            schema_doc = json.dumps(schema.model_json_schema())
+            instruction = (
+                "Respond with ONLY a single JSON object that conforms to this "
+                f"JSON Schema (no prose, no markdown fences):\n{schema_doc}"
+            )
+            system = f"{system}\n\n{instruction}" if system else instruction
+
         config = self._build_config(
             system=system,
-            schema=schema,
+            schema=schema if native_schema else None,
+            force_json=schema is not None,
             temperature=temperature,
             max_output_tokens=max_output_tokens,
         )
@@ -214,6 +255,7 @@ class GeminiClient:
         schema: type[BaseModel] | None,
         temperature: float,
         max_output_tokens: int | None,
+        force_json: bool = False,
     ) -> genai_types.GenerateContentConfig:
         kwargs: dict[str, Any] = {"temperature": temperature}
         if system:
@@ -223,6 +265,10 @@ class GeminiClient:
         if schema is not None:
             kwargs["response_mime_type"] = "application/json"
             kwargs["response_schema"] = schema
+        elif force_json:
+            # Schema-in-prompt fallback: constrain output to JSON without a
+            # native response_schema.
+            kwargs["response_mime_type"] = "application/json"
         return genai_types.GenerateContentConfig(**kwargs)
 
     async def _call_with_retry(
@@ -245,6 +291,10 @@ class GeminiClient:
             raise _map_api_error(exc) from exc
         except TimeoutError as exc:
             raise LLMTimeoutError(str(exc)) from exc
+        except ValueError as exc:
+            # The SDK raises ValueError on unsupported schema/config shapes —
+            # surface as an LLM error so the orchestrator fails the run cleanly.
+            raise LLMAPIError(f"Gemini SDK rejected the request: {exc}") from exc
         except RetryError as exc:  # pragma: no cover — reraise=True bypasses this
             raise LLMAPIError(f"Retry budget exhausted: {exc}") from exc
         # Unreachable — AsyncRetrying with reraise=True always returns or raises.
